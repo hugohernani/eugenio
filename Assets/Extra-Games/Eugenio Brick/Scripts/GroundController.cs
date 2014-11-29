@@ -13,7 +13,7 @@ public class GroundController : MonoBehaviour {
 	bool powerGunActivated, shooted;
 
 	float maxWidth;
-	float timeStar, timeQM, timeUp, timeDown, bulletStar;
+	float timeQM, timeUp, timeDown, timeBullet;
 
 	float[] scale, originalScaleBackup;
 
@@ -24,7 +24,7 @@ public class GroundController : MonoBehaviour {
 
 		SetMaxWidth();
 
-		timeStar = timeQM = timeUp = timeDown = 5.0f;
+		timeQM = timeUp = timeDown = timeBullet = 5.0f;
 
 		starBonus = qmBonus = upBonus = downBonus = false;
 	
@@ -43,7 +43,7 @@ public class GroundController : MonoBehaviour {
 	}
 
 	void BonusTimer() {
-		if(starBonus) CountDown(2);					//2
+		if(starBonus) controlClass.AddScore(20);	//2
 		if(qmBonus) CountDown(3);					//3
 		if(upBonus) CountDown(4);					//4
 		if(downBonus) CountDown(5);					//5
@@ -54,15 +54,6 @@ public class GroundController : MonoBehaviour {
 
 		switch (bonusItem) {
 		
-		case 2:
-			timeStar -= Time.deltaTime;
-			Debug.Log("Tempo para o "+bonusItem);
-			if(timeStar < 0) {
-				timeStar = 0;
-				controlClass.AddScore(20);
-				starBonus = false;
-			}
-			break;
 		case 3:
 			timeQM -= Time.deltaTime;
 			if(timeQM < 0) {
@@ -95,13 +86,13 @@ public class GroundController : MonoBehaviour {
 	void CounterBonusTimeShooting() {
 
 		bonusTimeText.SetActive(true);
-		bulletStar -= Time.deltaTime;
+		timeBullet -= Time.deltaTime;
 		UpdateBonusTimer();
 
-		if(bulletStar < 0) {
-			bulletStar = 0;
+		if(timeBullet < 0) {
+			timeBullet = 0;
 			UpdateBonusTimer();
-			starBonus = false;
+			bulletBonus = false;
 			bonusTimeText.SetActive(false);
 		}
 	}
@@ -247,7 +238,7 @@ public class GroundController : MonoBehaviour {
 	}
 
 	void UpdateBonusTimer() {
-		bonusTimeText.GetComponent<Text>().text = "Bonus\n" + Mathf.RoundToInt(timeStar);
+		bonusTimeText.GetComponent<Text>().text = "Bonus\n" + Mathf.RoundToInt(timeBullet);
 	}
 
 }

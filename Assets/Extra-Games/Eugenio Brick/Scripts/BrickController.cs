@@ -38,6 +38,9 @@ public class BrickController : MonoBehaviour {
 		} else if(collision.gameObject.tag == "Down") {
 			gameObject.collider2D.enabled = false;
 			colliderON = false;
+		} else if(collision.gameObject.tag == "Aim") {
+			gameObject.collider2D.enabled = false;
+			colliderON = false;
 		} else if(collision.gameObject.tag == "Bullet") {
 			Destroy(gameObject);
 			Destroy(collision.gameObject);
