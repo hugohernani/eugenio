@@ -127,6 +127,7 @@
      <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListFood.cs" />
      <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListGames.cs" />
      <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListImages.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListSubCategories.cs" />
      <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListTaskCategories.cs" />
      <Compile Include="Assets\Resources\ScenesList Resources\Scripts\ItemsToBuyList.cs" />
      <Compile Include="Assets\Resources\ScenesList Resources\Scripts\ManagerList.cs" />

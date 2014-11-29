@@ -13,6 +13,8 @@ public abstract class ListAbstract: MonoBehaviour{
 
 	public static bool SHOWING = false;
 
+	public static bool SubCategoryTask = false;
+
 	public void clean(){
 
 		removeAllFromContainer ();

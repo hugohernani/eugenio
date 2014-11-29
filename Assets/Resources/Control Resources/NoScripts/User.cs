@@ -97,7 +97,6 @@ public class User {
 	}
 
 	public Task getTask(int mainCategoryId, int subCategoryId){
-		Debug.Log ("subCatId: " + subCategoryId);
 		foreach(Task task in tasks){
 			if(task.CategoryId == mainCategoryId && task.SubCategoryId == subCategoryId){
 				return task;
@@ -117,8 +116,12 @@ public class User {
 
 	public Category getSubCategory(int subCategoryId){
 		foreach (Category item in categories) {
-			if(item.Id == subCategoryId)
-				return item;
+			if(item.SubCategories != null){
+				foreach (Category subCategory in item.SubCategories) {
+					if(subCategory.Id == subCategoryId)
+						return subCategory;
+				}
+			}
 		}
 		return null;
 	}

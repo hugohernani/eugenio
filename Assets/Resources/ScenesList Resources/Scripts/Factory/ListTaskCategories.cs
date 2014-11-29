@@ -25,7 +25,10 @@ public class ListTaskCategories : ListAbstract {
 				category.SubCategories,
 				category.Id
 				);
-			Debug.Log("itemCategoryId: " +category.Id);
+
+			Debug.Log("CatIdB: " + category.Id);
+
+
 			items.Add(item);
 		}
 
@@ -50,6 +53,9 @@ public class ListTaskCategories : ListAbstract {
 			if(itemTask.Available){
 
 				Destroy(newItem.GetComponentInChildren<Image>());
+
+				Debug.Log("CatId: " + itemTask.CategoryId);
+
 				UnityAction actionRepobulate = () => {repopulate(itemTask);};
 				newItem.GetComponent<Button>().onClick.AddListener(actionRepobulate);
 			}
@@ -76,53 +82,35 @@ public class ListTaskCategories : ListAbstract {
 
 		ListFactory factory = gameObject.GetComponent<ListFactory> ();
 		ListAbstract tempList;
-
 		User user = User.getInstance;
 		user.CurrentCategory = user.getCategory (item.CategoryId);
 
-		Task currentTask = user.getTask(user.CurrentCategory.Id, item.CategoryId); // mainCategoryId, categoryId
-		user.CurrentTask = currentTask;
+		if(item.Categories != null){ // It has SubCategories
 
-		if(currentTask != null){
-
-			ListAbstract.SHOWING = false;
+			List<Item> items = new List<Item> ();
 			
-			Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
-			Application.LoadLevel(currentTask.Name);
-
-//			ListAbstract.CategoryId = -1; // this determine that if the user try to get the currentTask through the method getTask in User, he will get null.
-		}else{ // has list of Categories or it is a list of Images
-			user.CurrentCategory.Id = item.CategoryId; // Capturing the mainCategoryId
-			if (item.Categories != null) {
-				if(item.Categories.Count != 0){
-					List<Item> items = new List<Item> ();
-					
-					foreach (Category category in item.Categories) {
-						MathSubCategory subCategory = (MathSubCategory) category;
-						Item newItemcategory = new ItemCategory(
-							subCategory.ToString(),
-							subCategory.Available,
-							subCategory.SubCategories,
-							item.CategoryId
-							);
-						items.Add(newItemcategory);
-					}
-					
-					tempList = factory.showList("task", gameObject);
-					tempList.Items = items;
-					user.CurrentSubCategory = user.getSubCategory (item.CategoryId);
-					tempList.populate(true);
-					
-				}
-			}else{
-				tempList = factory.showList ("Images", gameObject);
-				user.CurrentCategory.Id = item.CategoryId;
-				user.CurrentCategory = user.getCategory(user.CurrentCategory.Id);
-				Task foundTask = user.getTask(user.CurrentCategory.Id); // mainCategoryId, categoryId
-				user.CurrentTask = foundTask;
-				tempList.populate(false);
+			foreach (Category category in item.Categories) {
+				MathSubCategory subCategory = (MathSubCategory) category;
+				Item newItemcategory = new ItemCategory(
+					subCategory.ToString(),
+					subCategory.Available,
+					subCategory.SubCategories,
+					item.CategoryId
+					);
+				items.Add(newItemcategory);
 			}
 
+			tempList = factory.showList("subCategories", gameObject);
+			tempList.Items = items;
+
+			user.CurrentSubCategory = user.getSubCategory (item.CategoryId);
+			tempList.populate(true);
+		}else{
+			tempList = factory.showList ("Images", gameObject);
+			user.CurrentCategory.Id = item.CategoryId;
+			user.CurrentCategory = user.getCategory(user.CurrentCategory.Id);
+			tempList.populate(false);
 		}
+
 	}
 }

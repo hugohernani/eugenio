@@ -46,7 +46,8 @@ public class CheckDatabase : MonoBehaviour {
 
 		DataAccess dataAccess = this.gameObject.AddComponent<DataAccess> ();
 
-		dataAccess.LoginUser (username.value, password.value);
+//		dataAccess.LoginUser (username.value, password.value);
+		dataAccess.LoginUser ("hugohernani4", "pass1234");
 
 	}
 

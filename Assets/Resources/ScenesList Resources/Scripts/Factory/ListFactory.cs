@@ -11,6 +11,8 @@ public class ListFactory: MonoBehaviour{
 			list = go.gameObject.AddComponent<ListFood>();
 		}else if(category == "task"){
 			list = go.gameObject.AddComponent<ListTaskCategories>();
+		}else if(category == "subCategories"){
+			list = go.gameObject.AddComponent<ListSubCategories>();
 		}else if(category == "Images"){
 			list = go.gameObject.AddComponent<ListImages>();
 		}else if(category == "Games"){
