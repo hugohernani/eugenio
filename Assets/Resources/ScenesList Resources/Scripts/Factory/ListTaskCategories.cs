@@ -1,0 +1,128 @@
+﻿using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine.Events;
+
+public class ListTaskCategories : ListAbstract {
+
+	RectTransform itemPreFab;
+
+	void Awake(){
+		itemPreFab = Resources.Load<RectTransform> (PREFAB_RESOURCES + "itemText");
+	}
+
+	protected override System.Collections.Generic.List<Item> populateList ()
+	{
+		User user = User.getInstance;
+		List<Category> mainCategories = user.Categories;
+
+		List<Item> items = new List<Item> ();
+		
+		foreach (MainCategory category in mainCategories) {
+			Item item = new ItemCategory(
+				category.ToString(),
+				category.Available,
+				category.SubCategories,
+				category.Id
+				);
+			Debug.Log("itemCategoryId: " +category.Id);
+			items.Add(item);
+		}
+
+		return items;
+
+	}
+
+	protected override float populateContainer (List<Item> items, RectTransform container)
+	{
+		float heightItem = 100f;
+		float posAcumulator = 0f;
+		// change this according to the quantity of items or scene
+		for (int i = 0; i < items.Count; i++) {
+			RectTransform newItem = Instantiate (itemPreFab, container.transform.position, Quaternion.identity) as RectTransform;
+			
+			int newInt = i;
+
+			ItemCategory itemTask = items[newInt] as ItemCategory;
+
+			newItem.GetComponent<Text>().text = itemTask.Name; // text
+
+			if(itemTask.Available){
+
+				Destroy(newItem.GetComponentInChildren<Image>());
+				UnityAction actionRepobulate = () => {repopulate(itemTask);};
+				newItem.GetComponent<Button>().onClick.AddListener(actionRepobulate);
+			}
+
+			newItem.parent = container.transform;
+			
+			newItem.offsetMax = Vector2.zero;
+			newItem.offsetMin = Vector2.zero;
+			
+			newItem.offsetMin = new Vector2(newItem.offsetMin.x, -posAcumulator);
+			newItem.offsetMax = new Vector2(newItem.offsetMax.x, -posAcumulator);
+			
+			posAcumulator += heightItem;
+		}
+		return posAcumulator;
+	}
+
+	protected override int finishClick (int value)
+	{
+		return value;
+	}
+
+	void repopulate(ItemCategory item){
+
+		ListFactory factory = gameObject.GetComponent<ListFactory> ();
+		ListAbstract tempList;
+
+		User user = User.getInstance;
+		user.CurrentCategory = user.getCategory (item.CategoryId);
+
+		Task currentTask = user.getTask(user.CurrentCategory.Id, item.CategoryId); // mainCategoryId, categoryId
+		user.CurrentTask = currentTask;
+
+		if(currentTask != null){
+
+			ListAbstract.SHOWING = false;
+			
+			Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
+			Application.LoadLevel(currentTask.Name);
+
+//			ListAbstract.CategoryId = -1; // this determine that if the user try to get the currentTask through the method getTask in User, he will get null.
+		}else{ // has list of Categories or it is a list of Images
+			user.CurrentCategory.Id = item.CategoryId; // Capturing the mainCategoryId
+			if (item.Categories != null) {
+				if(item.Categories.Count != 0){
+					List<Item> items = new List<Item> ();
+					
+					foreach (Category category in item.Categories) {
+						MathSubCategory subCategory = (MathSubCategory) category;
+						Item newItemcategory = new ItemCategory(
+							subCategory.ToString(),
+							subCategory.Available,
+							subCategory.SubCategories,
+							item.CategoryId
+							);
+						items.Add(newItemcategory);
+					}
+					
+					tempList = factory.showList("task", gameObject);
+					tempList.Items = items;
+					user.CurrentSubCategory = user.getSubCategory (item.CategoryId);
+					tempList.populate(true);
+					
+				}
+			}else{
+				tempList = factory.showList ("Images", gameObject);
+				user.CurrentCategory.Id = item.CategoryId;
+				user.CurrentCategory = user.getCategory(user.CurrentCategory.Id);
+				Task foundTask = user.getTask(user.CurrentCategory.Id); // mainCategoryId, categoryId
+				user.CurrentTask = foundTask;
+				tempList.populate(false);
+			}
+
+		}
+	}
+}

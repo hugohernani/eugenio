@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProductVersion>10.0.20506</ProductVersion>
+	<SchemaVersion>2.0</SchemaVersion>
+	<ProjectGuid>{2AD815F3-44AC-D1D4-5F47-0801FD769F1E}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<AppDesignerFolder>Properties</AppDesignerFolder>
+	<RootNamespace></RootNamespace>
+	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<FileAlignment>512</FileAlignment>
+	<BaseDirectory>Assets</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>Temp\bin\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE;UNITY_4_6_0;UNITY_4_6;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_4_6_FEATURES;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>Temp\bin\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+	<Reference Include="System" />
+    <Reference Include="System.XML" />
+	<Reference Include="System.Core" />
+	<Reference Include="System.Xml.Linq" />
+	<Reference Include="UnityEngine">
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEditor">
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup>
+     <Compile Include="Assets\Estudar\Scripts\EstudarScript.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\BrickController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\ControlClass.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\EugenioController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\GroundController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\LimitController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\SpawnController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\GameScore.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\ProjectileFollow.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\Resetter.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\RestartApp.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\SelfKill.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\StrikeController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\TargetDamage.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Trick\Scripts\DestroyOnContact.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Trick\Scripts\Explode.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Trick\Scripts\GameController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Trick\Scripts\HatController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Trick\Scripts\Restart.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Trick\Scripts\Score.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Trick\Scripts\SelfDestruct.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Trick\Scripts\SetParticleSortingLayer.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\ChangeSceneController.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\EugenioController.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\MainMenu.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\MainMenuBackup.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\StarImageController.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\StarTextController.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\StudyController.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\ThinkingFoodController.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\ThinkingPlayController.cs" />
+     <Compile Include="Assets\MainMenu\Scripts\ThoughtController.cs" />
+     <Compile Include="Assets\Resources\All_Task\Scripts\DBTimeControlTask.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\Category.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\Food.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\Game.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\MainCategory.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\MathSubCategory.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\Pet.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\SceneDatabase.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\Task.cs" />
+     <Compile Include="Assets\Resources\Control Resources\NoScripts\User.cs" />
+     <Compile Include="Assets\Resources\Control Resources\Scripts\ControlInfoBar.cs" />
+     <Compile Include="Assets\Resources\Counting Resources\Scripts\Counting.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\AudioIconButton.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\AudioManager.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\CloseButton.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\EugenioInteraction.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\ExitEndTaskScene.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\HelpButton.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\MessageInteraction.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\MessagePointReceiver.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\PlayMore.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\RestartButton.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\ScoreInteraction.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\UserInteraction.cs" />
+     <Compile Include="Assets\Resources\EndGame Resources\Scripts\closeHelpDialog.cs" />
+     <Compile Include="Assets\Resources\Eugenio Pyramid\Scripts\ControllerPyramid.cs" />
+     <Compile Include="Assets\Resources\Login Resources\Scripts\ApplicationQuit.cs" />
+     <Compile Include="Assets\Resources\Login Resources\Scripts\CheckDatabase.cs" />
+     <Compile Include="Assets\Resources\Login Resources\Scripts\DataAccess.cs" />
+     <Compile Include="Assets\Resources\Login Resources\Scripts\First.cs" />
+     <Compile Include="Assets\Resources\Measuring_Resources\Scripts\ColliderAdjust.cs" />
+     <Compile Include="Assets\Resources\Measuring_Resources\Scripts\DisplayNumberUser.cs" />
+     <Compile Include="Assets\Resources\Measuring_Resources\Scripts\DragDropItem.cs" />
+     <Compile Include="Assets\Resources\Measuring_Resources\Scripts\ManagerMeasuring.cs" />
+     <Compile Include="Assets\Resources\Measuring_Resources\Scripts\NumberClick.cs" />
+     <Compile Include="Assets\Resources\Measuring_Resources\Scripts\VerifyClick.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\NoScripts\GameItem.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\NoScripts\Item.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\NoScripts\ItemCategory.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\NoScripts\ItemFood.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\NoScripts\ItemImage.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\NoScripts\ItemTask.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\ButtonImageList.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\ButtonTextList.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListAbstract.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListFactory.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListFood.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListGames.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListImages.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\Factory\ListTaskCategories.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\ItemsToBuyList.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\ManagerList.cs" />
+     <Compile Include="Assets\Resources\ScenesList Resources\Scripts\TaskCategory.cs" />
+     <Compile Include="Assets\ScriptsGeneral\ControllerGeneral.cs" />
+     <Compile Include="Assets\ScriptsGeneral\Model.cs" />
+     <Compile Include="Assets\Teste\MainCamera.cs" />
+ <Reference Include="UnityEngine.UI">
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
+ </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  
+</Project>
