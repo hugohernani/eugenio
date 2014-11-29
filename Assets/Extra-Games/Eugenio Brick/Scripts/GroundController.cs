@@ -5,7 +5,7 @@ using System.Collections;
 public class GroundController : MonoBehaviour {
 
 	ControlClass controlClass;
-	EugenioController eugenioController;
+	MyEugenioController eugenioController;
 
 	public GameObject bonusTimeText;
 

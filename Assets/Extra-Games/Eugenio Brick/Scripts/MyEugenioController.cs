@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class EugenioController : MonoBehaviour {
+public class MyEugenioController : MonoBehaviour {
 
 	public Transform ground;
 	public Transform[] bonus;	//Start[0] QuestMark[1] Up[2] Down[3]
