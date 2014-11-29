@@ -49,9 +49,9 @@
      <Compile Include="Assets\Estudar\Scripts\EstudarScript.cs" />
      <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\BrickController.cs" />
      <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\ControlClass.cs" />
-     <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\EugenioController.cs" />
      <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\GroundController.cs" />
      <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\LimitController.cs" />
+     <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\MyEugenioController.cs" />
      <Compile Include="Assets\Extra-Games\Eugenio Brick\Scripts\SpawnController.cs" />
      <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\GameScore.cs" />
      <Compile Include="Assets\Extra-Games\Eugenio Strike\Scripts\ProjectileFollow.cs" />
