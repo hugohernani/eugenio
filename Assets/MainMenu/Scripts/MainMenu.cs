@@ -254,9 +254,33 @@ public class MainMenu : MonoBehaviour {
 	public static void updatePoints (int value) {
 		StarTextController starTextController = StarTextController.instance;
 	  	StarImageController starImageController = StarImageController.instance;	
-		starTextController.playStarText(value);	
-		starImageController.playStarImage();
-	}	
+		int result = starTextController.playStarText(value);
+		if(result >= 0){
+			starImageController.playStarImage();
+		}
+	}
+
+	public void updateFoodSlider(int value){
+		// TODO Adjust value according to the user level.
+		// uFood ??
+//		foodSlider.value += value;
+	}
+
+	public void updateEntertainmentSlider(int value){
+		// TODO Adjust value according to the user level.
+		entSlider.value += value;
+	}
+
+	public void updateHealthSlider(int value){
+		// TODO Adjust value according to the user level.
+		healthSlider.value += value;
+
+	}
+
+	public void updateExperienceSlider(int value){
+		// TODO Adjust value according to the user level and/or tasks completed. ???
+		xpSlider.value += value;
+	}
 }
 
 	

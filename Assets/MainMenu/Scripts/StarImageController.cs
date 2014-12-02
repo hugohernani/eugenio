@@ -32,9 +32,6 @@ public class StarImageController : MonoBehaviour {
 		animator = GetComponent <Animator>();
 	}
 
-	void Update () {
-	}
-
 	public void playStarImage () {
 		instance.StartCoroutine(playAnimation("bStarImageAnim", time));	
 	}

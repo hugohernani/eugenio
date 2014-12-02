@@ -55,5 +55,10 @@ public class Pet{
 		}
 	}
 
+	public override string ToString ()
+	{
+		return string.Format ("[Pet: Health={0}, Entertainment={1}, Feed={2}, Experience={3}]", Health, Entertainment, Feed, Experience);
+	}
+
 
 }

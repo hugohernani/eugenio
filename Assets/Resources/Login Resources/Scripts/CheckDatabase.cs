@@ -47,7 +47,7 @@ public class CheckDatabase : MonoBehaviour {
 
 		DataAccess dataAccess = this.gameObject.AddComponent<DataAccess> ();
 
-		StartCoroutine (dataAccess.LoginUser ("hugohernani1", "pass1234", (info) =>{
+		StartCoroutine (dataAccess.LoginUser ("hugohernani4", "pass1234", (info) =>{
 			if(info != "finished"){
 				textLoading.text = info;
 			}else{

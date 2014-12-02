@@ -38,6 +38,7 @@ public class User {
 	Category currentCategory;
 	Category currentSubCategory;
 
+	[SerializeField]
 	Pet currentPetStatus;
 
 	private static volatile User instance;

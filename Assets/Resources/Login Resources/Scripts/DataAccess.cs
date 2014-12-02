@@ -93,19 +93,19 @@ public class DataAccess: MonoBehaviour{
 			user.School = textsplited [8];
 			user.Teacher = textsplited [9];
 			info("Usuario Encontrado. \n Level: " + user.Level_pet.ToString());
-			yield return new WaitForSeconds(2f);
+			yield return new WaitForSeconds(1f);
 			setPetStatus ();
 			info("Pet carregado.");
-			yield return new WaitForSeconds(2f);
+			yield return new WaitForSeconds(1f);
 			setAvailableFood (user.Level_pet);
 			info("Comidas disponiveis carregadas.");
-			yield return new WaitForSeconds(2f);
+			yield return new WaitForSeconds(1f);
 			getAvailableGames ();
 			info("Jogos disponiveis carregados.");
-			yield return new WaitForSeconds(2f);
+			yield return new WaitForSeconds(1f);
 			retrieveCategories ();
 			info("Categorias de tarefas carregadas.");
-			yield return new WaitForSeconds(2f);
+			yield return new WaitForSeconds(1f);
 			info("Tarefas carregadas.");
 
 			yield break;
