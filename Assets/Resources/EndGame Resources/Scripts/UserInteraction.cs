@@ -28,7 +28,7 @@ public class UserInteraction : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		step = 1;
-		int level = currentUser.Level_pet;
+		int level = 1;//currentUser.Level_pet;
 		total = level * defaultQntStage; 
 		hitQty = 0;
 		failQty = 0;
@@ -44,7 +44,6 @@ public class UserInteraction : MonoBehaviour {
 			eugenioInteraction.EugenioSad();
 		}
 
-
 	}
 
 	public int hit(){
@@ -55,6 +54,7 @@ public class UserInteraction : MonoBehaviour {
 			eugenioInteraction.EugenioYesAnimation();
 		}
 		currentUser.TaskPoints = hitQty;
+		currentUser.SaveTaskHits();
 		return hitQty;
 	}
 
@@ -71,8 +71,6 @@ public class UserInteraction : MonoBehaviour {
 	bool increaseStep(int hitQ = 0){
 		// TODO REDO
 		if(step % total == 0 || step % total == 10 ){
-			SceneDatabase sceneDatabase = SceneDatabase.getInstance;
-			sceneDatabase.pushScene(Application.loadedLevel);
 			Application.LoadLevel("EndTask");
 			return false;
 		}else{

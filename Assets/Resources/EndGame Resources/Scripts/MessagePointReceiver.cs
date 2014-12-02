@@ -16,18 +16,18 @@ public class MessagePointReceiver : MonoBehaviour {
 	public Sprite estrelaPrata;
 	public Sprite estrelaBronze;
 
-	private Image estrelaImage;
+	Image estrelaImage;
 
-	private Text pointValue;
-	private Text messageEnd;
-	private Text buttonPlayText;
-	private Image eugenioImage;
-	private User user;
-	private int value = -1; // doen't make sense. Unity almost obligated me to do this
+	Text pointValue;
+	Text messageEnd;
+	Text buttonPlayText;
+	Image eugenioImage;
+	User user;
+	int value = -1; // doen't make sense. Unity almost obligated me to do this
 
-	private string[] messagesFormat =
+	string[] messagesFormat =
 	{
-		"Parabens! \n Voce acertou {0} e ganhou +{1} estrelas!",
+		"Parabens! \n Voce acertou {0} desta e ganhou +{1} estrelas!",
 		"Voce perdeu. \n Vamos tentar outra vez?"
 	};
 
@@ -53,18 +53,21 @@ public class MessagePointReceiver : MonoBehaviour {
 	void Start () {
 		value = user.TaskPoints;
 
+		int userStars = user.StarsStage;
+
 		int diffOtherAtempt = Math.Abs(user.StarsStage - value);
 
-		if(value >= 7){
+		if(userStars >= 7){
 			messageEnd.text = string.Format(messagesFormat[0], value, diffOtherAtempt);
 			buttonPlayText.text = "JOGAR\nMAIS";
 			eugenioImage.sprite = eugenioFeliz;
 
-			if(value == 10){
+			if(userStars == 10){
+				messageEnd.text = string.Format(messagesFormat[0], value, 0); // He doesn't gain anything else if he already achieve the maximum value.
+
 				estrelaImage.sprite = estrelaOuro;
 
 				// Change this to use State Pattern
-
 
 				if(user.CurrentTask.Name == "Adicao"){
 					if(user.CurrentSubStage < 3){
@@ -80,7 +83,6 @@ public class MessagePointReceiver : MonoBehaviour {
 					}
 
 				}else{
-					user.CurrentStage++;
 					if(user.CurrentTask.Name != "Medir"){
 						messageEnd.text = "Parabens! \n voce ja ganhou todas as estrelas desta fase!\n" +
 							"Vamos para o proximo jogo?";
@@ -91,6 +93,7 @@ public class MessagePointReceiver : MonoBehaviour {
 							"Vamos para a proxima categoria?";
 						buttonPlayText.text = "PROXIMO categoria!";
 						user.releaseNextCategory();
+						user.CurrentStage++;
 					}
 				}
 			}else{
@@ -114,15 +117,14 @@ public class MessagePointReceiver : MonoBehaviour {
 	}
 
 	/*
-	 * @desc Call tha last scene stored in the stack.
+	 * @desc Call the scene according to the CurrentTask.Name
 	 */
 	public void GoBackScene(){
 		Application.LoadLevel (user.CurrentTask.Name);
 	}
 
 	/*
-	 * @desc Call the MainScene stored in the SceneDatabase
-	 * @see SceneDatabase
+	 * @desc Call the MainScene
 	 */
 	public void GoMainScene(){
 		Application.LoadLevel ("MainMenu");

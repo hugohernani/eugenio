@@ -31,8 +31,9 @@ public class ManagerMeasuring : MonoBehaviour {
 
 	void Awake(){
 		user = User.getInstance;
-		userInteraction = GameObject.Find ("Manager").GetComponent<UserInteraction> ();
-		messageInteraction = GameObject.Find ("Manager").GetComponent<MessageInteraction> ();
+		GameObject manager = GameObject.Find ("Manager");
+		userInteraction = manager.GetComponent<UserInteraction> ();
+		messageInteraction = manager.GetComponent<MessageInteraction> ();
 		displayNumber = GameObject.Find ("DisplayUserNumber").GetComponent<DisplayNumberUser> ();
 		transformItemHolder = GameObject.Find ("ItemsContainer").transform as RectTransform;
 		ItemPrefab = Resources.Load<RectTransform> (resourceItemPrefab);

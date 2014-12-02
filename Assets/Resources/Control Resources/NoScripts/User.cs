@@ -25,6 +25,7 @@ public class User {
 	List<Task> tasks;
 
 	List<UserDoes> userDoesList;
+	List<UserDoes> cachedUserDoesList;
 	UserDoes tempUserDoes;
 
 	int taskPoints; // acertos por fase
@@ -43,8 +44,10 @@ public class User {
 	private static object syncRoot = new System.Object();
 	
 	User() {
+		currentPetStatus = new Pet ();
 		tasks = new List<Task> ();
 		userDoesList = new List<UserDoes> ();
+		cachedUserDoesList = new List<UserDoes> ();
 		tempUserDoes = new UserDoes ();
 	}
 	
@@ -87,18 +90,18 @@ public class User {
 		}
 	}
 
-	public Task getTask(int mainCategoryId){
+	public Task getTask(string name, int mainCategoryId){
 		foreach(Task task in tasks){
-			if(task.CategoryId == mainCategoryId){
+			if(task.CategoryId == mainCategoryId && task.Name == name){
 				return task;
 			}
 		}
 		return null;
 	}
 
-	public Task getTask(int mainCategoryId, int subCategoryId){
+	public Task getTask(string name, int mainCategoryId, int subCategoryId){
 		foreach(Task task in tasks){
-			if(task.CategoryId == mainCategoryId && task.SubCategoryId == subCategoryId){
+			if(task.Name == name && task.CategoryId == mainCategoryId && task.SubCategoryId == subCategoryId){
 				return task;
 			}
 		}
@@ -144,6 +147,7 @@ public class User {
 		currentTask = tasks.ElementAt (indexCurrentTask+1);
 		currentTask.Available = true; // make the task available
 		tasks [indexCurrentTask + 1] = currentTask;
+		Debug.Log ("Task released: " + currentTask.ToString ()); 
 	}
 
 	public void releaseNextCategory ()
@@ -152,6 +156,7 @@ public class User {
 		currentCategory = categories.ElementAt(lastCategoryPosition+1);
 		currentCategory.Available = true; // make the category available
 		categories [lastCategoryPosition + 1] = currentCategory;
+		Debug.Log("Category released: " + currentCategory.ToString());
 	}
 
 	public void releaseNextSubCategory()
@@ -160,13 +165,13 @@ public class User {
 		currentSubCategory = subCategories.ElementAt (lastSubCategoryPosition+1);
 		currentSubCategory.Available = true; // make the subCategory available
 		categories [lastSubCategoryPosition + 1] = currentSubCategory;
+		Debug.Log ("SubCategory released: " + currentSubCategory.ToString ());
 	}
 
 	void setUserDoesFromCurrentList (int idTask)
 	{
 		foreach (UserDoes ud in userDoesList) {
 			if(ud.TaskId == idTask && ud.UserId == this.id){
-				Debug.Log("FOUND A USERDOES");
 				this.starsStage = ud.Stars;
 				tempUserDoes = ud;
 			}
@@ -208,6 +213,7 @@ public class User {
 			userDoesList[savedPosition] = userDoes;
 		}else{ // add
 			userDoesList.Add(userDoes);
+			cachedUserDoesList.Add(userDoes);
 		}
 
 	}
@@ -221,13 +227,17 @@ public class User {
 		}
 	}
 
-	public void PopUserTaskFromList ()
-	{
-		this.userDoesList.RemoveAt (userDoesList.Count - 1);
+	public List<UserDoes> CachedUserDoesList {
+		get {
+			return this.cachedUserDoesList;
+		}
+		set {
+			cachedUserDoesList = value;
+		}
 	}
 
-	public bool RemoveUserTaskFromList(UserDoes taskRelation){
-		return this.userDoesList.Remove (taskRelation);
+	public bool RemoveUserTaskFromCachedList(UserDoes taskRelation){
+		return this.cachedUserDoesList.Remove (taskRelation);
 	}
 
 	public void AddTaskByVerification(Task newTask){

@@ -6,7 +6,6 @@ public class Task{
 	private string name;
 	private int categoryId;
 	private int subCategoryId;
-	private int stage;
 	private int subStage;
 	private bool available;
 
@@ -51,14 +50,6 @@ public class Task{
 		}
 	}
 
-	public int Stage {
-		get {
-			return this.stage;
-		}
-		set {
-			stage = value;
-		}
-	}
 
 	public bool Available {
 		get {
@@ -71,7 +62,7 @@ public class Task{
 
 	public override string ToString ()
 	{	
-		return string.Format ("[Task: Id={0}, Name={1}, CategoryId={2}, SubCategoryId={3}, Stage={4}, Available={5}]", Id, Name, CategoryId, SubCategoryId, Stage, Available);
+		return string.Format ("[Task: Id={0}, Name={1}, CategoryId={2}, SubCategoryId={3}, Available={4}]", Id, Name, CategoryId, SubCategoryId, Available);
 	}
 
 }

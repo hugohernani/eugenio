@@ -10,8 +10,6 @@ public class ApplicationQuit : MonoBehaviour {
 	void OnApplicationQuit(){
 		DataAccess dataAccess = gameObject.AddComponent<DataAccess> ();
 
-		DBTimeControlTask.END_TASK ();
-
 		dataAccess.createUpdateUserDoes ();
 
 		Destroy (this.gameObject);

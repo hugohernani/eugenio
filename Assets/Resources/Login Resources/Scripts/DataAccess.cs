@@ -66,7 +66,7 @@ public class DataAccess: MonoBehaviour{
 		WaitForRequest (wwwResquest);
 	}
 
-	private void ILoginUser(string username, string password){
+	private IEnumerator ILoginUser(string username, string password, Action<string> info){
 		string targetUri = serverUriPath + userAccessUriPath;
 		targetUri += "getUser/";
 		
@@ -92,24 +92,88 @@ public class DataAccess: MonoBehaviour{
 			user.Stars_qty = int.Parse (textsplited [7]);
 			user.School = textsplited [8];
 			user.Teacher = textsplited [9];
+			info("Usuario Encontrado. \n Level: " + user.Level_pet.ToString());
+			yield return new WaitForSeconds(2f);
 			setPetStatus ();
+			info("Pet carregado.");
+			yield return new WaitForSeconds(2f);
 			setAvailableFood (user.Level_pet);
+			info("Comidas disponiveis carregadas.");
+			yield return new WaitForSeconds(2f);
 			getAvailableGames ();
+			info("Jogos disponiveis carregados.");
+			yield return new WaitForSeconds(2f);
 			retrieveCategories ();
+			info("Categorias de tarefas carregadas.");
+			yield return new WaitForSeconds(2f);
+			info("Tarefas carregadas.");
 
-			FINISH = true;
+			yield break;
 
 		} else {
-			CheckDatabase.UriReach = "Aluno nao cadastrado.";
+
+			yield break;
 		}
 
 
 
 	}
 
-	public void LoginUser(string username, string password){
 
-		ILoginUser(username, password);
+	// TODO Until now just verify the connection with the server.
+	IEnumerator testConnection (Action<string> action, Action<bool> result)
+	{
+		bool availability;
+
+		switch(Application.internetReachability){
+		case NetworkReachability.ReachableViaLocalAreaNetwork:
+			availability = true;
+			break;
+		case NetworkReachability.ReachableViaCarrierDataNetwork:
+			availability = true; // this can be changed to deal with redirection...
+			break;
+		case NetworkReachability.NotReachable:
+			availability = false;
+			break;
+		default:
+			availability = false;
+			break;
+
+		}
+		if(availability){
+			WWW wwwTest = new WWW(serverUriPath); // server url
+			while(!wwwTest.isDone){ // It would be better using a coroutine. Maybe later.
+				action("Conexao ainda nao estabelecida.");
+			}
+			if(wwwTest.error == null){
+				result(true);
+			}else{
+				action("Houve algum problema na conexao com o servidor.");
+				result(false);
+			}
+		}else{
+			action("Sem conexao.");
+		}
+
+		yield return null;
+
+	}
+
+	public IEnumerator LoginUser(string username, string password, Action<string> action){
+
+		action("Verificando conexao");
+		bool result = false;
+		yield return StartCoroutine (testConnection (action, (connected) =>{
+			result = connected;
+		}));
+		if(result){
+			yield return new WaitForSeconds (1f);
+			yield return StartCoroutine(ILoginUser(username, password, action));
+			yield return new WaitForSeconds(1f);
+			action("Informaçoes adquiridas");
+			yield return new WaitForSeconds(1f);
+			action ("finished");
+		}
 
 	}
 
@@ -172,8 +236,28 @@ public class DataAccess: MonoBehaviour{
 			Debug.Log ("Pet updated in the server side");
 		} else {
 			Debug.Log("A problem occured updating the server side");
+
+			// TODO Saving in file
 		}
 	}
+
+	public void updatePetStatus(Pet pet){
+		string targetUri = serverUriPath + PetAccessUriPath;
+		targetUri += ("updatePet/" + user.Id.ToString() + "/" + pet.Feed.ToString() + "/" + pet.Health.ToString() +
+		              pet.Entertainment.ToString() + "/" + pet.Experience.ToString() + "/");
+		
+		GET (targetUri);
+		string response = wwwResquest.text;
+		
+		if (response == "1") {
+			Debug.Log ("Pet updated in the server side");
+		} else {
+			Debug.Log("A problem occured updating the pet in the server side");
+
+			// TODO Saving in file.
+		}
+	}
+
 
 	private void getAvailableGames(){
 		string targetUri = serverUriPath + GameAccessUriPath;
@@ -365,6 +449,7 @@ public class DataAccess: MonoBehaviour{
 		}
 
 		user.UserDoesList = tempListUserDoes;
+		user.CachedUserDoesList = tempListUserDoes;
 
 	}
 
@@ -374,7 +459,7 @@ public class DataAccess: MonoBehaviour{
 
 		List<User.UserDoes> itemsToRemoveFromList = new List<User.UserDoes> ();
 
-		foreach (User.UserDoes userDoes in user.UserDoesList) {
+		foreach (User.UserDoes userDoes in user.CachedUserDoesList) {
 			Dictionary<string, string> userDoesDict = new Dictionary<string, string> ();
 
 			userDoesDict.Add("user", userDoes.UserId.ToString());
@@ -384,21 +469,59 @@ public class DataAccess: MonoBehaviour{
 			userDoesDict.Add("duration",userDoes.Duration.ToString());
 			userDoesDict.Add("date_user_did", userDoes.Date_user_did.ToString("yyyy-MM-dd HH:mm:ss"));
 
-			Debug.Log("Before saving: " + userDoes.ToString());
-			Debug.Log("Before saving: " + userDoes.Date_user_did.ToString("yyyy-MM-dd HH:mm:ss"));
-
 			bool result = POSTConfirmation(targetUri, userDoesDict);
 
-			if(result) Debug.Log("UserDoes tuple created in database");
+			if(result){
+				Debug.Log("UserTask tuple created/updated in database");
+			}else{
+				// TODO save in file.
 
+				Debug.Log("UserTask saved in file"); // TODO
+			}
 			itemsToRemoveFromList.Add(userDoes);
-
 		}
 
-		foreach (User.UserDoes taskRelated in itemsToRemoveFromList) {
-			user.RemoveUserTaskFromList(taskRelated);
+		foreach (User.UserDoes ud in itemsToRemoveFromList) {
+			user.RemoveUserTaskFromCachedList(ud);
 		}
+
+	}
+
+	public void updateUserInfo(){
+		string targetUri = serverUriPath + userAccessUriPath;
+		targetUri += ("update/");
+
+		Dictionary<string, string> userDict = new Dictionary<string, string> ();
+
+		userDict.Add("name", user.Name);
+		userDict.Add ("password", user.Password);
+		userDict.Add("level", user.Level_pet.ToString ());
+		userDict.Add("logged_time", user.Logged_time.ToString());
+		userDict.Add("currentStage", user.CurrentStage.ToString());
+		userDict.Add("currentSubStage",user.CurrentSubStage.ToString());
+		userDict.Add("stars", user.Stars_qty.ToString());
+
+		bool result = POSTConfirmation(targetUri, userDict);
 		
+		if(result){
+
+			string response = wwwResquest.text;
+
+			if (response == "1") {
+				Debug.Log ("User updated in the server side");
+			} else {
+				Debug.Log("A problem occured updating the User in the server side");
+				
+				// TODO Saving in file due to problem in the server side
+			}
+		}else{
+			// TODO save in file due to problem with conection.
+			
+			Debug.Log("User saved in file"); // TODO
+		}
+
+		updatePetStatus (user.CurrentPetStatus);
+
 	}
 
 	private void WaitForRequest(WWW www)
@@ -426,6 +549,8 @@ public class DataAccess: MonoBehaviour{
 		while(!www.isDone){
 		}
 
+		wwwResquest = www;
+
 		bool result = false;
 
 		// check for errors
@@ -434,7 +559,6 @@ public class DataAccess: MonoBehaviour{
 			result = true;
 
 		} else{
-			Debug.Log("result: " + www.error);
 			result = false;
 		}
 		return result;

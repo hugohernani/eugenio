@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class CheckDatabase : MonoBehaviour {
 
@@ -46,19 +47,46 @@ public class CheckDatabase : MonoBehaviour {
 
 		DataAccess dataAccess = this.gameObject.AddComponent<DataAccess> ();
 
-//		dataAccess.LoginUser (username.value, password.value);
-		dataAccess.LoginUser ("hugohernani4", "pass1234");
+		StartCoroutine (dataAccess.LoginUser ("hugohernani1", "pass1234", (info) =>{
+			if(info != "finished"){
+				textLoading.text = info;
+			}else{
+				Application.LoadLevel("MainMenu");
+				Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
 
-	}
-
-	void FixedUpdate(){
-		if(DataAccess.FINISH){
-			Application.LoadLevel("MainMenu");
-			DataAccess.FINISH = false;
-			Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
-		}else{
-			textLoading.text = "Carregando... \n" + UriReach;
+			}
 		}
+		));
+
+//		dataAccess.LoginUser (username.value, password.value);
+
 	}
+
+//	
+//	void Start(){
+//		bool isConnected = false;
+//		StartCoroutine(checkInternetConnection((isConnected)=>{
+//			Debug.Log(isConnected);
+//		}));
+//	}
+//	checkInternetConnection(Action<bool> action){
+//		WWW www = new WWW("http://google.com");
+//		yield return www;
+//		if (www.error != null) {
+//			action (false);
+//		} else {
+//			action (true);
+//		}
+//	} 
+
+//	void FixedUpdate(){
+//		if(DataAccess.FINISH){
+//			Application.LoadLevel("MainMenu");
+//			DataAccess.FINISH = false;
+//			Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
+//		}else{
+//			textLoading.text = "Carregando... \n" + UriReach;
+//		}
+//	}
 
 }

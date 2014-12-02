@@ -85,11 +85,12 @@
      <Compile Include="Assets\Resources\Control Resources\NoScripts\MainCategory.cs" />
      <Compile Include="Assets\Resources\Control Resources\NoScripts\MathSubCategory.cs" />
      <Compile Include="Assets\Resources\Control Resources\NoScripts\Pet.cs" />
-     <Compile Include="Assets\Resources\Control Resources\NoScripts\SceneDatabase.cs" />
      <Compile Include="Assets\Resources\Control Resources\NoScripts\Task.cs" />
      <Compile Include="Assets\Resources\Control Resources\NoScripts\User.cs" />
      <Compile Include="Assets\Resources\Control Resources\Scripts\ControlInfoBar.cs" />
      <Compile Include="Assets\Resources\Counting Resources\Scripts\Counting.cs" />
+     <Compile Include="Assets\Resources\Counting Resources\Scripts\CountingItemsControl.cs" />
+     <Compile Include="Assets\Resources\Counting Resources\Scripts\CountingManager.cs" />
      <Compile Include="Assets\Resources\EndGame Resources\Scripts\AudioIconButton.cs" />
      <Compile Include="Assets\Resources\EndGame Resources\Scripts\AudioManager.cs" />
      <Compile Include="Assets\Resources\EndGame Resources\Scripts\CloseButton.cs" />

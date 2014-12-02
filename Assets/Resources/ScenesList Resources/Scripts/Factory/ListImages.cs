@@ -23,24 +23,12 @@ public class ListImages : ListAbstract {
 		List<Item> items = new List<Item> ();
 
 
-		bool first = true;
 		foreach (Task task in tasks) {
-			Item item = null;
-			if(first){
-				item = new ItemImages(
+			Item item = new ItemImages(
 					task.Name,
 					Resources.Load<Sprite> (resourceImageItem + task.Name),
 					task.Available
 					);
-				first = false;
-			}else{
-				item = new ItemImages(
-					task.Name,
-					Resources.Load<Sprite> (resourceImageItem + task.Name),
-					task.Available
-					);
-				// TODO replace true to task.Available
-			}
 			items.Add(item);
 		}
 
@@ -86,6 +74,8 @@ public class ListImages : ListAbstract {
 	}
 
 	void callScene(ItemImages item){
+
+		user.CurrentTask = user.getTask (item.Name, user.CurrentCategory.Id);
 
 		user.SaveTaskName(item.Name);
 

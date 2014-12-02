@@ -8,6 +8,10 @@ public class Pet{
 	float feed;
 	float experience;
 
+	public Pet(){
+
+	}
+
 	public Pet (float feed, float health, float entertainment)
 	{
 		this.health = health;

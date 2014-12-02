@@ -14,7 +14,6 @@ public abstract class ControlInfoBar : MonoBehaviour{
 
 	// current scene and User
 	User currentUser;
-	SceneDatabase scenesDatabase;
 
 	// default Resource
 	readonly string DEFAULT_PATH = "Control Resources/";
@@ -193,7 +192,6 @@ public abstract class ControlInfoBar : MonoBehaviour{
 	void Start ()
 	{
 		currentUser = User.getInstance;
-		scenesDatabase = SceneDatabase.getInstance;
 
 
 		variablesInitializations ();
@@ -679,8 +677,6 @@ public abstract class ControlInfoBar : MonoBehaviour{
 			currentStage++;
 		}else{
 			audioSource.PlayOneShot(clipInteraction);
-			scenesDatabase.pushScene(Application.loadedLevel);
-			
 			Application.LoadLevel("EndTask");
 			Destroy(gameObject);
 

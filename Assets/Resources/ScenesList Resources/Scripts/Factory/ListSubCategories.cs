@@ -60,14 +60,13 @@ public class ListSubCategories : ListAbstract {
 
 	void callScene(ItemCategory item){
 		User user = User.getInstance;
-		Task currentTask = user.getTask(user.CurrentSubCategory.Id, item.CategoryId); // categoryId and subCategoryId
-		
-		user.CurrentTask = currentTask;
+
+		user.CurrentTask = user.getTask(item.Name, user.CurrentCategory.Id, user.CurrentSubCategory.Id);
 		
 		ListAbstract.SHOWING = false;
 
 		Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
-		Application.LoadLevel(currentTask.Name);
+		Application.LoadLevel(item.Name);
 
 	}
 	

@@ -11,6 +11,8 @@ public class StarTextController : MonoBehaviour {
 	public Text text2;
 	private int result;
 
+	User user;
+
 
 	public static StarTextController instance
 	{
@@ -38,16 +40,23 @@ public class StarTextController : MonoBehaviour {
 		animator = GetComponent <Animator>();
 		text = GetComponent <Text>();
 
-		User user = User.getInstance;
+		user = User.getInstance;
 		text2.text = user.Stars_qty.ToString();
 
 	}
 
 	public void playStarText (int value) {
-		text.text = value.ToString();
-		instance.StartCoroutine(instance.playAnimation("bStarTextAnim", time));
 		result = Int32.Parse(text2.text) - value;
-		text2.text = result.ToString();
+
+		if(result < 0){
+			// TODO David, change this according to your animation name to deal with not enough money to buy food.
+			instance.StartCoroutine(instance.playAnimation("NOT_ENOUGH_MONEY", time));
+		}else{
+			text.text = value.ToString();
+			instance.StartCoroutine(instance.playAnimation("bStarTextAnim", time));
+			user.Stars_qty = result;
+			text2.text = result.ToString();
+		}
 	}
 
 	IEnumerator playAnimation (string var, float time) {

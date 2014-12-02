@@ -26,9 +26,6 @@ public class ManagerList : MonoBehaviour {
 		minLimit = RectTransformScrollView.offsetMin;
 		maxLimit = RectTransformScrollView.offsetMax;
 
-//		DataAccess dataAccess = gameObject.AddComponent<DataAccess> ();
-//		dataAccess.LoginUser ("HugoHernani", "PASS1234");
-
 	}
 
 	public void FoodsList(){
