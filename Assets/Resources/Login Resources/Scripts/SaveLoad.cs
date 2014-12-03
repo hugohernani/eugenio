@@ -10,14 +10,16 @@ using System.IO;
 public class SaveLoad {
 
 	List<User.UserDoes> userDoesList;
-	
+
 	string userPath;
 
-	public SaveLoad (string userName) {
-        userDoesList = new List<User.UserDoes>();
+	public SaveLoad (string userName, bool createDirectory = false) {
+		userDoesList = new List<User.UserDoes> ();
 		userPath = Application.persistentDataPath + "/" + userName;
 
-		Directory.CreateDirectory (userPath);
+		if(createDirectory && !Directory.Exists(userPath)){
+			Directory.CreateDirectory (userPath);
+		}
 
 	}
 
@@ -100,4 +102,5 @@ public class SaveLoad {
 		Directory.Delete (userPath, true);
 		return (Directory.Exists (userPath));
 	}
+
 }

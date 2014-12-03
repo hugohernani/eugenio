@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections; 
+using System.Collections;
 using System.Collections.Generic; 
+using System.IO;
 
 public class DataAccess: MonoBehaviour{
 	
@@ -29,7 +30,18 @@ public class DataAccess: MonoBehaviour{
 	
 	void Awake(){
 		user = User.getInstance;
-		saveLoad = new SaveLoad(user.Name);
+
+		commitFiles (); // This method will save in database each file saved before when there weren't connection.
+
+		saveLoad = new SaveLoad(user.Name, true);
+	}
+
+	void commitFiles(){
+		string[] usersFoldersNames = Directory.GetDirectories (Application.persistentDataPath);
+		foreach (string userFolderName in usersFoldersNames) {
+			SaveLoad saveLoadInstance = new SaveLoad(userFolderName);
+			updateInfoInDatabaseFromFile(saveLoadInstance);
+		}
 	}
 	
 	public void POST(string url, Dictionary<string,string> post)
@@ -559,22 +571,28 @@ public class DataAccess: MonoBehaviour{
 		}
 	}
 
-	public void updateInfoInDatebaseFromFile(){
-		updateUserFromFile ();
-		updateUserDoesFromFile ();
-		saveLoad.destroyUserFolder ();
+	public void updateInfoInDatabaseFromFile(SaveLoad saveLoadInstance = null){
+		if(saveLoadInstance != null){
+			updateUserFromFile (saveLoadInstance);
+			updateUserDoesFromFile (saveLoadInstance);
+			saveLoadInstance.destroyUserFolder ();
+		}else{
+			updateUserFromFile (saveLoad);
+			updateUserDoesFromFile (saveLoad);
+			saveLoad.destroyUserFolder ();
+		}
 		// reconstruct saveLoad object?
 	}
 
-	void updateUserFromFile(){
-		Dictionary<string, string> userDict = saveLoad.LoadUserDict ();
+	void updateUserFromFile(SaveLoad saveLoadInstance){
+		Dictionary<string, string> userDict = saveLoadInstance.LoadUserDict ();
 		updateUserInfo (userDict);
 
-		updatePetStatus (saveLoad.LoadPet ());
+		updatePetStatus (saveLoadInstance.LoadPet ());
 	}
 
-	void updateUserDoesFromFile(){
-		createUpdateUserDoes (saveLoad.LoadUserDoesList ());
+	void updateUserDoesFromFile(SaveLoad saveLoadInstance){
+		createUpdateUserDoes (saveLoadInstance.LoadUserDoesList ());
 	}
 	
 	private void WaitForRequest(WWW www) {
