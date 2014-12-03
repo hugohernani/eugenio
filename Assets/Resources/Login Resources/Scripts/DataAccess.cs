@@ -24,7 +24,6 @@ public class DataAccess: MonoBehaviour{
 	bool nextTaskAvailable = true;	
 	private static int previousTaskId = -1;
 
-	
 	SaveLoad saveLoad;
 	
 	void Awake(){
@@ -78,9 +77,13 @@ public class DataAccess: MonoBehaviour{
 			usersFoldersNames[i] = path.Substring(lastIndexSlash+1);
 		}
 		if(usersFoldersPath.Length != 0){
-			foreach (string userFolderName in usersFoldersNames) {
-				SaveLoad saveLoadInstance = new SaveLoad(userFolderName);
-				updateInfoInDatabaseFromFile(saveLoadInstance);
+			for(int i = 0; i < usersFoldersPath.Length; i++){
+				if(Directory.GetFiles(usersFoldersPath[i]).Length != 0){
+					string userName = usersFoldersNames[i];
+					SaveLoad saveLoadInstance = new SaveLoad(userName);
+					updateInfoInDatabaseFromFile(saveLoadInstance);
+					saveLoadInstance.destroyUserFolder(userName);
+				}
 			}
 		}else{
 			Debug.Log("There are not users informations to be commited to database");
@@ -165,7 +168,7 @@ public class DataAccess: MonoBehaviour{
 		if(availability){
 			WWW wwwTest = new WWW(serverUriPath); // server url
 			while(!wwwTest.isDone){ // It would be better using a coroutine. Maybe later.
-				action("Conexao ainda nao estabelecida.");
+				action("Tentando estabelecer conexao. \n Por favor, aguarde.");
 			}
 			if(wwwTest.error == null){
 				result(true);
@@ -189,7 +192,7 @@ public class DataAccess: MonoBehaviour{
 			result = connected;
 		}));
 		if(result){
-			saveLoad = new SaveLoad(username);
+			this.saveLoad = new SaveLoad(username);
 
 			yield return StartCoroutine(commitFiles ()); // This method will save in database each file saved before when there weren't connection.
 			yield return new WaitForSeconds (3f);
@@ -605,7 +608,6 @@ public class DataAccess: MonoBehaviour{
 		if(saveLoadInstance != null){
 			updateUserFromFile (saveLoadInstance);
 			updateUserDoesFromFile (saveLoadInstance);
-			saveLoadInstance.destroyUserFolder ();
 		}else{
 			updateUserFromFile (saveLoad);
 			updateUserDoesFromFile (saveLoad);
@@ -636,24 +638,22 @@ public class DataAccess: MonoBehaviour{
 	// kind of template pattern
 	public void trySaveUserInformationsOnDB ()
 	{
+		this.saveLoad = new SaveLoad (user.Name);
 		int qntSuccess = 0;
 		if(updateUserInfo()){
-			Debug.Log("UserInfo captured and saved");
 			qntSuccess++;
 		}
 
 		if(updatePetStatus(user.CurrentPetStatus)){
-			Debug.Log("Pet status captured and saved");
 			qntSuccess++;
 		}
 
 		if(createUpdateUserDoes()){
-			Debug.Log("User Task captured and saved");
 			qntSuccess++;
 		}
 
 		if(qntSuccess != 3){
-			updateInfoInDatabaseFromFile(new SaveLoad(user.Name));
+			updateInfoInDatabaseFromFile(saveLoad);
 		}else{
 			Debug.Log("All information saved");
 		}
@@ -675,7 +675,7 @@ public class DataAccess: MonoBehaviour{
 			
 		} else {
 			Debug.Log("WWW Error: "+ www.error);
-		}    
+		}
 	}
 	
 	bool WaitForRequestWithConfirmation(WWW www) {

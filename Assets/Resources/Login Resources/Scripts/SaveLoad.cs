@@ -10,12 +10,11 @@ using System.IO;
 public class SaveLoad {
 
 	List<User.UserDoes> userDoesList;
-
-	string userPath;
+	static string userPath;
 
 	public SaveLoad (string userName) {
 		userDoesList = new List<User.UserDoes> ();
-		userPath = Application.persistentDataPath + "/" + userName;
+		SaveLoad.userPath = Application.persistentDataPath + "/" + userName;
 
 		if(!Directory.Exists(userPath)){
 			Directory.CreateDirectory (userPath);
@@ -39,8 +38,6 @@ public class SaveLoad {
 			BinaryFormatter bf = new BinaryFormatter();
 			Dictionary<string, string> userDict = (Dictionary<string, string>)bf.Deserialize(file);
 			file.Close();
-
-			File.Delete(path);
 			return userDict;
 		} else 
 			return null;
@@ -68,8 +65,6 @@ public class SaveLoad {
 			BinaryFormatter bf = new BinaryFormatter();
 			userDoesList = (List<User.UserDoes>)bf.Deserialize(file);
 			file.Close();
-
-			File.Delete(path);
 			return userDoesList;
 		} else 
 			return null;
@@ -91,8 +86,6 @@ public class SaveLoad {
 			BinaryFormatter bf = new BinaryFormatter();
 			Pet pet = (Pet)bf.Deserialize(file);
 			file.Close();
-
-			File.Delete(path);
 			return pet;
 		} else 
 			return null;
@@ -104,5 +97,14 @@ public class SaveLoad {
 		}
 		return (Directory.Exists (userPath));
 	}
+
+	public bool destroyUserFolder(string username){
+		string path = Application.persistentDataPath + "/" + username;
+		if(Directory.Exists(path)){
+			Directory.Delete (path, true);
+		}
+		return (Directory.Exists (path));
+	}
+
 
 }

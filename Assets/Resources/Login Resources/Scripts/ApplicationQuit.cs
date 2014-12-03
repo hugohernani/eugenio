@@ -8,7 +8,7 @@ public class ApplicationQuit : MonoBehaviour {
 	void Awake(){
 		DontDestroyOnLoad (gameObject);
 		dataAccess = gameObject.AddComponent<DataAccess> ();
-		InvokeRepeating ("saveData", 100f, 100f); // save data after each 10 minutes
+		InvokeRepeating ("saveData", 300f, 300f); // save data after each 10 minutes
 	}
 
 	void saveData(){
