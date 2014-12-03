@@ -16,63 +16,88 @@ public class SaveLoad {
 	public SaveLoad (string userName) {
         userDoesList = new List<User.UserDoes>();
 		userPath = Application.persistentDataPath + "/" + userName;
+
+		Directory.CreateDirectory (userPath);
+
 	}
 
-	public void SaveUserDict (Dictionary<string, string> userDict) {
+	public bool SaveUserDict (Dictionary<string, string> userDict) {
+		string path = userPath + "/savedUserDict.gd";
+		FileStream file = File.Create(path);
 		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file = File.Create(userPath + "/savedUserDict.gd");
 		bf.Serialize(file, userDict);
 		file.Close();
+		return File.Exists(path);
 	}
 
 	public Dictionary<string, string> LoadUserDict () {
 		if(File.Exists(userPath + "/savedUserDict.gd")) { 
+			string path = userPath + "/savedUserDict.gd";
+			FileStream file = File.Open(path, FileMode.Open);
 			BinaryFormatter bf = new BinaryFormatter();
-			FileStream file = File.Open(userPath + "/savedUserDict.gd", FileMode.Open);
 			Dictionary<string, string> userDict = (Dictionary<string, string>)bf.Deserialize(file);
 			file.Close();
-			
+
+			File.Delete(path);
 			return userDict;
 		} else 
 			return null;
 	}
 
-	public void SaveUserDoes (User.UserDoes userDoes) {
-		userDoesList.Add(userDoes);
-		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file = File.Create(userPath + "/savedUserDoesList.gd");
-		bf.Serialize(file, userDoesList);
-		file.Close();
+	public void AddUserDoes(User.UserDoes ud) {
+		userDoesList.Add(ud);
+	}
+
+	public bool SaveUserDoes () {
+		string path = userPath + "/savedUserDoesList.gd";
+		if(userDoesList.Count != 0){
+			FileStream file = File.Create(path);
+			BinaryFormatter bf = new BinaryFormatter();
+			bf.Serialize(file, userDoesList);
+			file.Close();
+		}
+		return File.Exists(path);
 	}
 
 	public List<User.UserDoes> LoadUserDoesList () {
 		if(File.Exists(userPath + "/savedUserDoesList.gd")) { 
+			string path = userPath + "/savedUserDoesList.gd";
+			FileStream file = File.Open(path, FileMode.Open);
 			BinaryFormatter bf = new BinaryFormatter();
-			FileStream file = File.Open(userPath + "/savedUserDoesList.gd", FileMode.Open);
 			userDoesList = (List<User.UserDoes>)bf.Deserialize(file);
 			file.Close();
 
+			File.Delete(path);
 			return userDoesList;
 		} else 
 			return null;
 	}
 
-	public void SavePet (Pet pet) {
+	public bool SavePet (Pet pet) {
+		string path = userPath + "/savedPet.gd";
+		FileStream file = File.Create(path);
 		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file = File.Create(userPath + "/savedPet.gd");
 		bf.Serialize(file, pet);
 		file.Close();
+		return File.Exists(path);
 	}
 
 	public Pet LoadPet () {
 		if(File.Exists(userPath + "/savedPet.gd")) { 
+			string path = userPath + "/savedPet.gd";
+			FileStream file = File.Open(path, FileMode.Open);
 			BinaryFormatter bf = new BinaryFormatter();
-			FileStream file = File.Open(userPath + "/savedPet.gd", FileMode.Open);
 			Pet pet = (Pet)bf.Deserialize(file);
 			file.Close();
 
+			File.Delete(path);
 			return pet;
 		} else 
 			return null;
+	}
+
+	public bool destroyUserFolder(){
+		Directory.Delete (userPath, true);
+		return (Directory.Exists (userPath));
 	}
 }

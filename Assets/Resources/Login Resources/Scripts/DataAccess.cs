@@ -220,6 +220,7 @@ public class DataAccess: MonoBehaviour{
 				float.Parse(statusObjects[1]),
 				float.Parse(statusObjects[2])
 				);
+			petStatus.UserId = user.Id;
 			petStatus.Experience = float.Parse(statusObjects[3]);
 			
 			user.CurrentPetStatus = petStatus;
@@ -238,13 +239,14 @@ public class DataAccess: MonoBehaviour{
 		if (response == "1") {
 			Debug.Log ("Pet updated in the server side");
 		} else {
-			Debug.Log("A problem occured updating the server side");	 
+			saveLoad.SavePet(user.CurrentPetStatus);
+			Debug.Log("A problem occured updating the server side. Saving Pet in file");	 
 		}
 	}
 	
 	public void updatePetStatus(Pet pet){
 		string targetUri = serverUriPath + PetAccessUriPath;
-		targetUri += ("updatePet/" + user.Id.ToString() + "/" + pet.Feed.ToString() + "/" + pet.Health.ToString() +
+		targetUri += ("updatePet/" + pet.UserId.ToString() + "/" + pet.Feed.ToString() + "/" + pet.Health.ToString() +
 		              pet.Entertainment.ToString() + "/" + pet.Experience.ToString() + "/");
 		
 		GET (targetUri);
@@ -253,15 +255,11 @@ public class DataAccess: MonoBehaviour{
 		if (response == "1") {
 			Debug.Log ("Pet updated in the server side");
 		} else {
-			Debug.Log("A problem occured updating the pet in the server side");
-			
-			saveLoad.SavePet(pet);
-			
-			// TODO Saving in file.
+			saveLoad.SavePet(user.CurrentPetStatus);
+			Debug.Log("A problem occured updating the server side. Saving Pet in file");	 
 		}
 	}
-	
-	
+
 	private void getAvailableGames(){
 		string targetUri = serverUriPath + GameAccessUriPath;
 		targetUri += "all/";
@@ -455,13 +453,42 @@ public class DataAccess: MonoBehaviour{
 		user.CachedUserDoesList = tempListUserDoes;
 		
 	}
+
+	// this is dealt a little different from the overload method because doesn't need remove from userDoesList their items.
+	public void createUpdateUserDoes(List<User.UserDoes> userDoesList){
+		string targetUri = serverUriPath + userAccessUriPath;
+		targetUri += ("createUpdateUserDoes/");
+
+		foreach (User.UserDoes userDoes in userDoesList) {
+			Dictionary<string, string> userDoesDict = new Dictionary<string, string> ();
+			
+			userDoesDict.Add("user", userDoes.UserId.ToString());
+			userDoesDict.Add("task", userDoes.TaskId.ToString());
+			userDoesDict.Add("hits", userDoes.Hits.ToString());
+			userDoesDict.Add("stars", userDoes.Stars.ToString());
+			userDoesDict.Add("duration",userDoes.Duration.ToString());
+			userDoesDict.Add("date_user_did", userDoes.Date_user_did.ToString("yyyy-MM-dd HH:mm:ss"));
+			
+			bool result = POSTConfirmation(targetUri, userDoesDict);
+			
+			if(result){
+				Debug.Log("UserTask tuple created/updated in database");
+			} else {
+				saveLoad.AddUserDoes(userDoes);
+				Debug.Log("UserTask saved in file");
+			}
+		}
+
+		saveLoad.SaveUserDoes ();
+
+	}
 	
 	public void createUpdateUserDoes(){
 		string targetUri = serverUriPath + userAccessUriPath;
 		targetUri += ("createUpdateUserDoes/");
 		
 		List<User.UserDoes> itemsToRemoveFromList = new List<User.UserDoes> ();
-		
+
 		foreach (User.UserDoes userDoes in user.CachedUserDoesList) {
 			Dictionary<string, string> userDoesDict = new Dictionary<string, string> ();
 			
@@ -477,25 +504,21 @@ public class DataAccess: MonoBehaviour{
 			if(result){
 				Debug.Log("UserTask tuple created/updated in database");
 			} else {
-				// TODO save in file.
-				
-				saveLoad.SaveUserDoes(userDoes);
-				
-				Debug.Log("UserTask saved in file"); // TODO
+				saveLoad.AddUserDoes(userDoes);
+				Debug.Log("UserTask saved in file");
 			}
 			itemsToRemoveFromList.Add(userDoes);
 		}
-		
+
+		saveLoad.SaveUserDoes ();
+
 		foreach (User.UserDoes ud in itemsToRemoveFromList) {
 			user.RemoveUserTaskFromCachedList(ud);
 		}
 		
 	}
-	
+
 	public void updateUserInfo(){
-		string targetUri = serverUriPath + userAccessUriPath;
-		targetUri += ("update/");
-		
 		Dictionary<string, string> userDict = new Dictionary<string, string> ();
 		
 		userDict.Add("name", user.Name);
@@ -505,7 +528,15 @@ public class DataAccess: MonoBehaviour{
 		userDict.Add("currentStage", user.CurrentStage.ToString());
 		userDict.Add("currentSubStage",user.CurrentSubStage.ToString());
 		userDict.Add("stars", user.Stars_qty.ToString());
-		
+
+		updateUserInfo (userDict);
+
+	}
+
+	public void updateUserInfo(Dictionary<string, string> userDict){
+		string targetUri = serverUriPath + userAccessUriPath;
+		targetUri += ("update/");
+
 		bool result = POSTConfirmation(targetUri, userDict);
 		
 		if(result){
@@ -524,12 +555,26 @@ public class DataAccess: MonoBehaviour{
 		}else{
 			// TODO save in file due to problem with conection.
 			saveLoad.SaveUserDict(userDict);
-			
 			Debug.Log("User saved in file"); // TODO
 		}
-		
-		updatePetStatus (user.CurrentPetStatus);
-		
+	}
+
+	public void updateInfoInDatebaseFromFile(){
+		updateUserFromFile ();
+		updateUserDoesFromFile ();
+		saveLoad.destroyUserFolder ();
+		// reconstruct saveLoad object?
+	}
+
+	void updateUserFromFile(){
+		Dictionary<string, string> userDict = saveLoad.LoadUserDict ();
+		updateUserInfo (userDict);
+
+		updatePetStatus (saveLoad.LoadPet ());
+	}
+
+	void updateUserDoesFromFile(){
+		createUpdateUserDoes (saveLoad.LoadUserDoesList ());
 	}
 	
 	private void WaitForRequest(WWW www) {
