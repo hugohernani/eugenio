@@ -242,9 +242,7 @@ public class User {
 	}
 
 	public void AddTaskByVerification(Task newTask){
-		Debug.Log ("To add: " + newTask.ToString ());
 		if(!tasks.Contains(newTask)){
-			Debug.Log("Task added: " + newTask.ToString());
 			tasks.Add(newTask);
 		}
 	}
@@ -408,6 +406,7 @@ public class User {
 		}
 	}
 
+	[Serializable]
 	public class UserDoes{
 		int id;
 		int userId;

@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
+[Serializable]
 public class Pet{
 
+	int userId;
 	float health;
 	float entertainment;
 	float feed;
@@ -17,6 +20,15 @@ public class Pet{
 		this.health = health;
 		this.entertainment = entertainment;
 		this.feed = feed;
+	}
+
+	public int UserId {
+		get {
+			return this.userId;
+		}
+		set {
+			userId = value;
+		}
 	}
 
 	public float Health {

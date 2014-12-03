@@ -10,41 +10,29 @@ public class DataAccess: MonoBehaviour{
 	readonly string NAME_FIELD = "nome";
 	readonly string PASSWORD_FIELD = "senha";
 	
-	private readonly string serverUriPath = "http://localhost:8000/";
-	private readonly string userAccessUriPath = "User/";
-	private readonly string foodAccessUriPath = "Food/";
-	private readonly string TaskManagerAccessUriPath = "TaskManager/";
-	private readonly string GameAccessUriPath = "Game/";
-	private readonly string PetAccessUriPath = "VirtualPet/";
+	readonly string serverUriPath = "http://localhost:8000/";
+	readonly string userAccessUriPath = "User/";
+	readonly string foodAccessUriPath = "Food/";
+	readonly string TaskManagerAccessUriPath = "TaskManager/";
+	readonly string GameAccessUriPath = "Game/";
+	readonly string PetAccessUriPath = "VirtualPet/";
 	
-	private User user;
-	private WWW wwwResquest;
-	
-	public static bool FINISH = false;
-	
-	bool nextTaskAvailable = true;
-	
+	User user;
+	WWW wwwResquest;
+
+	// control variables
+	bool nextTaskAvailable = true;	
 	private static int previousTaskId = -1;
+
 	
 	SaveLoad saveLoad;
 	
 	void Awake(){
 		user = User.getInstance;
-
-		commitFiles (); // This method will save in database each file saved before when there weren't connection.
-
-		saveLoad = new SaveLoad(user.Name, true);
+		saveLoad = new SaveLoad (user.Name);
 	}
 
-	void commitFiles(){
-		string[] usersFoldersNames = Directory.GetDirectories (Application.persistentDataPath);
-		foreach (string userFolderName in usersFoldersNames) {
-			SaveLoad saveLoadInstance = new SaveLoad(userFolderName);
-			updateInfoInDatabaseFromFile(saveLoadInstance);
-		}
-	}
-	
-	public void POST(string url, Dictionary<string,string> post)
+	void POST(string url, Dictionary<string,string> post)
 	{
 		WWWForm form = new WWWForm();
 		foreach(KeyValuePair<String,String> post_arg in post)
@@ -56,7 +44,7 @@ public class DataAccess: MonoBehaviour{
 		WaitForRequest(www);
 	}
 	
-	public bool POSTConfirmation(string url, Dictionary<string, string> post)
+	bool POSTConfirmation(string url, Dictionary<string, string> post)
 	{
 		WWWForm form = new WWWForm ();
 		foreach(KeyValuePair<String,String> post_arg in post)
@@ -68,20 +56,40 @@ public class DataAccess: MonoBehaviour{
 		return WaitForRequestWithConfirmation (www);
 	}
 	
-	public void GET(string url){
+	void GET(string url){
 		wwwResquest = new WWW (url);
 		
 		WaitForRequest (wwwResquest);
 	}
 	
 	
-	public void GET(string url, string getArgument){
+	void GET(string url, string getArgument){
 		wwwResquest = new WWW (url + "/" + getArgument);
 		
 		WaitForRequest (wwwResquest);
 	}
+
+	IEnumerator commitFiles(){
+		string[] usersFoldersPath = Directory.GetDirectories(Application.persistentDataPath);
+		string[] usersFoldersNames = new string[usersFoldersPath.Length];
+		for(int i = 0; i < usersFoldersPath.Length; i++){
+			string path = usersFoldersPath[i];
+			int lastIndexSlash = path.LastIndexOf("\\");
+			usersFoldersNames[i] = path.Substring(lastIndexSlash+1);
+		}
+		if(usersFoldersPath.Length != 0){
+			foreach (string userFolderName in usersFoldersNames) {
+				SaveLoad saveLoadInstance = new SaveLoad(userFolderName);
+				updateInfoInDatabaseFromFile(saveLoadInstance);
+			}
+		}else{
+			Debug.Log("There are not users informations to be commited to database");
+		}
+		yield break;
+	}
+
 	
-	private IEnumerator ILoginUser(string username, string password, Action<string> info){
+	IEnumerator ILoginUser(string username, string password, Action<string> info){
 		string targetUri = serverUriPath + userAccessUriPath;
 		targetUri += "getUser/";
 		
@@ -133,8 +141,7 @@ public class DataAccess: MonoBehaviour{
 		
 		
 	}
-	
-	
+
 	// TODO Until now just verify the connection with the server.
 	IEnumerator testConnection (Action<string> action, Action<bool> result)
 	{
@@ -182,7 +189,10 @@ public class DataAccess: MonoBehaviour{
 			result = connected;
 		}));
 		if(result){
-			yield return new WaitForSeconds (1f);
+			saveLoad = new SaveLoad(username);
+
+			yield return StartCoroutine(commitFiles ()); // This method will save in database each file saved before when there weren't connection.
+			yield return new WaitForSeconds (3f);
 			yield return StartCoroutine(ILoginUser(username, password, action));
 			yield return new WaitForSeconds(1f);
 			action("Informaçoes adquiridas");
@@ -192,7 +202,7 @@ public class DataAccess: MonoBehaviour{
 		
 	}
 	
-	private void setAvailableFood(int level){
+	void setAvailableFood(int level){
 		string targetUri = serverUriPath + foodAccessUriPath;
 		targetUri += ("filter/" + level + "/");
 		
@@ -215,7 +225,7 @@ public class DataAccess: MonoBehaviour{
 		}
 	}
 	
-	private void setPetStatus(){
+	void setPetStatus(){
 		string targetUri = serverUriPath + PetAccessUriPath;
 		targetUri += ("get/" + user.Id.ToString() + "/");
 		
@@ -225,8 +235,6 @@ public class DataAccess: MonoBehaviour{
 		if(response != ""){
 			string[] statusObjects = response.Split(',');
 			
-			Debug.Log("Pet status: " + response);
-			
 			Pet petStatus = new Pet(
 				float.Parse(statusObjects[0]),
 				float.Parse(statusObjects[1]),
@@ -234,13 +242,13 @@ public class DataAccess: MonoBehaviour{
 				);
 			petStatus.UserId = user.Id;
 			petStatus.Experience = float.Parse(statusObjects[3]);
-			
+
 			user.CurrentPetStatus = petStatus;
 			
 		}
 	}
 	
-	public void updatePetStatus(float feed, float health, float entertainment, float experience){
+	void updatePetStatus(float feed, float health, float entertainment, float experience){
 		string targetUri = serverUriPath + PetAccessUriPath;
 		targetUri += ("updatePet/" + user.Id.ToString() + "/" + feed.ToString() + "/" + health.ToString() +
 		              entertainment.ToString() + "/" + experience.ToString() + "/");
@@ -256,23 +264,25 @@ public class DataAccess: MonoBehaviour{
 		}
 	}
 	
-	public void updatePetStatus(Pet pet){
+	bool updatePetStatus(Pet pet){
 		string targetUri = serverUriPath + PetAccessUriPath;
 		targetUri += ("updatePet/" + pet.UserId.ToString() + "/" + pet.Feed.ToString() + "/" + pet.Health.ToString() +
-		              pet.Entertainment.ToString() + "/" + pet.Experience.ToString() + "/");
-		
+		              "/" + pet.Entertainment.ToString() + "/" + pet.Experience.ToString() + "/");
+
 		GET (targetUri);
 		string response = wwwResquest.text;
 		
 		if (response == "1") {
 			Debug.Log ("Pet updated in the server side");
+			return true;
 		} else {
 			saveLoad.SavePet(user.CurrentPetStatus);
-			Debug.Log("A problem occured updating the server side. Saving Pet in file");	 
+			Debug.Log("A problem occured updating the server side. Saving Pet in file");
+			return false;
 		}
 	}
 
-	private void getAvailableGames(){
+	void getAvailableGames(){
 		string targetUri = serverUriPath + GameAccessUriPath;
 		targetUri += "all/";
 		
@@ -296,7 +306,7 @@ public class DataAccess: MonoBehaviour{
 		user.Games = games;
 	}
 	
-	private void retrieveCategories(){
+	void retrieveCategories(){
 		string targetUri = serverUriPath + TaskManagerAccessUriPath;
 		targetUri += ("categories/all/" + user.Level_pet + "/" + user.CurrentStage + "/");
 		
@@ -327,7 +337,7 @@ public class DataAccess: MonoBehaviour{
 		user.Categories = categories;
 	}
 	
-	private List<Category> retrieveSubCategories(Category category, int categoryStage){
+	List<Category> retrieveSubCategories(Category category, int categoryStage){
 		string targetUri = serverUriPath + TaskManagerAccessUriPath;
 		targetUri += ("subCategories/filter/" + category.Id + "/" + user.CurrentStage + "/" 
 		              + categoryStage + "/" + user.CurrentSubStage + "/");
@@ -361,16 +371,15 @@ public class DataAccess: MonoBehaviour{
 				
 			}
 			
-			Debug.Log(subCategories.Count + " Subcategorias da categoria " + ((MainCategory) category).Name + ", " + category.Id + " adicionadas.");
-			
 			return subCategories;
 		}
 	}
 	
-	private void retrieveTasksAndUserDoes(Category category, Category subCategory){
+	void retrieveTasksAndUserDoes(Category category, Category subCategory){
 		string targetUri = serverUriPath + TaskManagerAccessUriPath;
 		targetUri += ("tasks/filter/" + user.Id + "/" + category.Id + "/");
-		
+
+
 		if (subCategory != null){
 			targetUri += (subCategory.Id + "/");
 		}
@@ -396,7 +405,6 @@ public class DataAccess: MonoBehaviour{
 				task.Available = (nextTaskAvailable = true);
 				
 				string[] udValues = values[5].Split('|');
-				Debug.Log(values[5]);
 				User.UserDoes ud = new User.UserDoes();
 				ud.Id = int.Parse(udValues[0]);
 				ud.UserId = int.Parse(udValues[1]);
@@ -410,7 +418,6 @@ public class DataAccess: MonoBehaviour{
 				
 				user.AddUserDoesByVerification(ud);
 			}else{
-				Debug.Log("Guaranteed: " + nextTaskAvailable);
 				task.Available = nextTaskAvailable;
 				nextTaskAvailable = false;
 				
@@ -466,11 +473,13 @@ public class DataAccess: MonoBehaviour{
 		
 	}
 
-	// this is dealt a little different from the overload method because doesn't need remove from userDoesList their items.
-	public void createUpdateUserDoes(List<User.UserDoes> userDoesList){
+	// this is dealt a litle different from the overload method because doesn't need remove from userDoesList their items.
+	bool createUpdateUserDoes(List<User.UserDoes> userDoesList){
 		string targetUri = serverUriPath + userAccessUriPath;
 		targetUri += ("createUpdateUserDoes/");
 
+		int qntSavedInDB = 0;
+		bool success = false;
 		foreach (User.UserDoes userDoes in userDoesList) {
 			Dictionary<string, string> userDoesDict = new Dictionary<string, string> ();
 			
@@ -484,6 +493,7 @@ public class DataAccess: MonoBehaviour{
 			bool result = POSTConfirmation(targetUri, userDoesDict);
 			
 			if(result){
+				qntSavedInDB++;
 				Debug.Log("UserTask tuple created/updated in database");
 			} else {
 				saveLoad.AddUserDoes(userDoes);
@@ -491,16 +501,25 @@ public class DataAccess: MonoBehaviour{
 			}
 		}
 
-		saveLoad.SaveUserDoes ();
+		if(qntSavedInDB != 0 && qntSavedInDB == userDoesList.Count){
+			success = true;
+		}
+
+		if(saveLoad != null)
+			saveLoad.SaveUserDoes ();
+
+		return success;
 
 	}
 	
-	public void createUpdateUserDoes(){
+	bool createUpdateUserDoes(){
 		string targetUri = serverUriPath + userAccessUriPath;
 		targetUri += ("createUpdateUserDoes/");
 		
 		List<User.UserDoes> itemsToRemoveFromList = new List<User.UserDoes> ();
 
+		int qntSavedInDB = 0;
+		bool success = false;
 		foreach (User.UserDoes userDoes in user.CachedUserDoesList) {
 			Dictionary<string, string> userDoesDict = new Dictionary<string, string> ();
 			
@@ -514,6 +533,7 @@ public class DataAccess: MonoBehaviour{
 			bool result = POSTConfirmation(targetUri, userDoesDict);
 			
 			if(result){
+				qntSavedInDB++;
 				Debug.Log("UserTask tuple created/updated in database");
 			} else {
 				saveLoad.AddUserDoes(userDoes);
@@ -522,15 +542,23 @@ public class DataAccess: MonoBehaviour{
 			itemsToRemoveFromList.Add(userDoes);
 		}
 
-		saveLoad.SaveUserDoes ();
+		if(qntSavedInDB != 0 && qntSavedInDB == user.CachedUserDoesList.Count){
+			success = true;
+		}
+
+		if(saveLoad != null){
+			saveLoad.SaveUserDoes ();
+		}
 
 		foreach (User.UserDoes ud in itemsToRemoveFromList) {
 			user.RemoveUserTaskFromCachedList(ud);
 		}
+
+		return success;
 		
 	}
 
-	public void updateUserInfo(){
+	bool updateUserInfo(){
 		Dictionary<string, string> userDict = new Dictionary<string, string> ();
 		
 		userDict.Add("name", user.Name);
@@ -541,11 +569,11 @@ public class DataAccess: MonoBehaviour{
 		userDict.Add("currentSubStage",user.CurrentSubStage.ToString());
 		userDict.Add("stars", user.Stars_qty.ToString());
 
-		updateUserInfo (userDict);
+		return updateUserInfo (userDict);
 
 	}
 
-	public void updateUserInfo(Dictionary<string, string> userDict){
+	bool updateUserInfo(Dictionary<string, string> userDict){
 		string targetUri = serverUriPath + userAccessUriPath;
 		targetUri += ("update/");
 
@@ -557,21 +585,23 @@ public class DataAccess: MonoBehaviour{
 			
 			if (response == "1") {
 				Debug.Log ("User updated in the server side");
+				return true;
 			} else {
 				Debug.Log("A problem occured updating the User in the server side");
-				
 				saveLoad.SaveUserDict(userDict);
-				// TODO Saving in file due to problem in the server side
-				
+				return false;
 			}
 		}else{
-			// TODO save in file due to problem with conection.
 			saveLoad.SaveUserDict(userDict);
-			Debug.Log("User saved in file"); // TODO
+			Debug.Log("User saved in file");
+			return false;
+
 		}
+
+		return result;
 	}
 
-	public void updateInfoInDatabaseFromFile(SaveLoad saveLoadInstance = null){
+	void updateInfoInDatabaseFromFile(SaveLoad saveLoadInstance = null){
 		if(saveLoadInstance != null){
 			updateUserFromFile (saveLoadInstance);
 			updateUserDoesFromFile (saveLoadInstance);
@@ -584,18 +614,52 @@ public class DataAccess: MonoBehaviour{
 		// reconstruct saveLoad object?
 	}
 
+	// kind of template pattern
 	void updateUserFromFile(SaveLoad saveLoadInstance){
 		Dictionary<string, string> userDict = saveLoadInstance.LoadUserDict ();
-		updateUserInfo (userDict);
-
-		updatePetStatus (saveLoadInstance.LoadPet ());
+		if (userDict != null) {
+			updateUserInfo (userDict);
+		}
+		Pet petLoaded = saveLoadInstance.LoadPet ();
+		if(petLoaded != null){
+			updatePetStatus (petLoaded);
+		}
 	}
 
 	void updateUserDoesFromFile(SaveLoad saveLoadInstance){
-		createUpdateUserDoes (saveLoadInstance.LoadUserDoesList ());
+		List<User.UserDoes> userDoesLoadedList = saveLoadInstance.LoadUserDoesList ();
+		if(userDoesLoadedList != null)
+			createUpdateUserDoes (userDoesLoadedList);
+	}
+
+
+	// kind of template pattern
+	public void trySaveUserInformationsOnDB ()
+	{
+		int qntSuccess = 0;
+		if(updateUserInfo()){
+			Debug.Log("UserInfo captured and saved");
+			qntSuccess++;
+		}
+
+		if(updatePetStatus(user.CurrentPetStatus)){
+			Debug.Log("Pet status captured and saved");
+			qntSuccess++;
+		}
+
+		if(createUpdateUserDoes()){
+			Debug.Log("User Task captured and saved");
+			qntSuccess++;
+		}
+
+		if(qntSuccess != 3){
+			updateInfoInDatabaseFromFile(new SaveLoad(user.Name));
+		}else{
+			Debug.Log("All information saved");
+		}
 	}
 	
-	private void WaitForRequest(WWW www) {
+	void WaitForRequest(WWW www) {
 		
 		while(!www.isDone){
 			CheckDatabase.UriReach = www.url;
@@ -614,7 +678,7 @@ public class DataAccess: MonoBehaviour{
 		}    
 	}
 	
-	private bool WaitForRequestWithConfirmation(WWW www) {
+	bool WaitForRequestWithConfirmation(WWW www) {
 		
 		while(!www.isDone){
 		}

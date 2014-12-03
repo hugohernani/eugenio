@@ -26,8 +26,6 @@ public class ListTaskCategories : ListAbstract {
 				category.Id
 				);
 
-			Debug.Log("CatIdB: " + category.Id);
-
 
 			items.Add(item);
 		}
@@ -53,8 +51,6 @@ public class ListTaskCategories : ListAbstract {
 			if(itemTask.Available){
 
 				Destroy(newItem.GetComponentInChildren<Image>());
-
-				Debug.Log("CatId: " + itemTask.CategoryId);
 
 				UnityAction actionRepobulate = () => {repopulate(itemTask);};
 				newItem.GetComponent<Button>().onClick.AddListener(actionRepobulate);

@@ -103,13 +103,13 @@ public class MainMenu : MonoBehaviour {
 		}*/
 	}
 	
-	private void updateSliderValues () {
+	void updateSliderValues () {
 		qtyFood = foodSlider.value;
 		qtyHealth = healthSlider.value;
 		qtyEnt = entSlider.value;
 	}
 	
-	private void calcFuzzyFicacao () {
+	void calcFuzzyFicacao () {
 		
 		// uFood
 		if (0 <= qtyFood && qtyFood < 0.25) {
@@ -181,7 +181,7 @@ public class MainMenu : MonoBehaviour {
 		}
 	}
 
-	private void calcInference () {
+	void calcInference () {
 
 		for ( int i = 0; i < 3; i++ ){
 			for ( int j = 0; j < 3; j++ ){
@@ -196,7 +196,7 @@ public class MainMenu : MonoBehaviour {
 		}
 	}
 
-	private void calcDefuzzyFicacao () {
+	void calcDefuzzyFicacao () {
 		float sumY = 0;
 		float sumR = 0;
 
@@ -208,7 +208,7 @@ public class MainMenu : MonoBehaviour {
 		this.decayRate = sumY / sumR;
 	}
 
-	private void calcDecayRate () {
+	void calcDecayRate () {
 		updateSliderValues();
 		createDecayList();
 		
@@ -217,7 +217,7 @@ public class MainMenu : MonoBehaviour {
 		calcDefuzzyFicacao ();
 	}
 
-	private void createDecayList () {
+	void createDecayList () {
 		decayList.Add(MR);
 		decayList.Add(MR);	
 		decayList.Add(R);	
@@ -247,7 +247,7 @@ public class MainMenu : MonoBehaviour {
 		decayList.Add(ML);	
 	}
 
-	private void applyDecay () {
+	void applyDecay () {
 		print("valor de decayRate e " + decayRate);
 	}
 
@@ -274,7 +274,6 @@ public class MainMenu : MonoBehaviour {
 	public void updateHealthSlider(int value){
 		// TODO Adjust value according to the user level.
 		healthSlider.value += value;
-
 	}
 
 	public void updateExperienceSlider(int value){
@@ -282,5 +281,3 @@ public class MainMenu : MonoBehaviour {
 		xpSlider.value += value;
 	}
 }
-
-	

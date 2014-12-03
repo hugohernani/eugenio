@@ -13,11 +13,11 @@ public class SaveLoad {
 
 	string userPath;
 
-	public SaveLoad (string userName, bool createDirectory = false) {
+	public SaveLoad (string userName) {
 		userDoesList = new List<User.UserDoes> ();
 		userPath = Application.persistentDataPath + "/" + userName;
 
-		if(createDirectory && !Directory.Exists(userPath)){
+		if(!Directory.Exists(userPath)){
 			Directory.CreateDirectory (userPath);
 		}
 
@@ -99,7 +99,9 @@ public class SaveLoad {
 	}
 
 	public bool destroyUserFolder(){
-		Directory.Delete (userPath, true);
+		if(Directory.Exists(userPath)){
+			Directory.Delete (userPath, true);
+		}
 		return (Directory.Exists (userPath));
 	}
 

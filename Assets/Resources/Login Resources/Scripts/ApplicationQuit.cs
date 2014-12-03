@@ -3,16 +3,22 @@ using System.Collections;
 
 public class ApplicationQuit : MonoBehaviour {
 
+	DataAccess dataAccess;
+
 	void Awake(){
 		DontDestroyOnLoad (gameObject);
+		dataAccess = gameObject.AddComponent<DataAccess> ();
+		InvokeRepeating ("saveData", 100f, 100f); // save data after each 10 minutes
+	}
+
+	void saveData(){
+		Debug.Log ("Called saveData");
+		dataAccess.trySaveUserInformationsOnDB ();
 	}
 
 	void OnApplicationQuit(){
-		DataAccess dataAccess = gameObject.AddComponent<DataAccess> ();
-
-		dataAccess.createUpdateUserDoes ();
-
-		Destroy (this.gameObject);
+		CancelInvoke ("saveData");
+		dataAccess.trySaveUserInformationsOnDB ();
 	}
 
 }
