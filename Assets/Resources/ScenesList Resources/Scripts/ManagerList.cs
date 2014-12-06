@@ -96,7 +96,7 @@ public class ManagerList : MonoBehaviour {
 			if(ListFood.Bought){
 				ListFood.Bought = false;
 				result = ListFood.food.Value;
-				MainMenu.updatePoints(result);
+				EugenioSceneControl.updatePoints(result);
 			}else{
 				result = -1;
 			}

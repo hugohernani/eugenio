@@ -14,8 +14,15 @@ public class EugenioController : MonoBehaviour {
 	public AudioClip takingMedicineSound;
 	public AudioClip evolutionSound;
 
+	AudioSource audio;
+	User user = User.getInstance;
+
 	void Awake () {
+		level = user.Level_pet;
+		GameObject mainCameraGO = GameObject.Find ("Main Camera");
+		this.audio = mainCameraGO.GetComponent<AudioSource> ();
 		animator = GetComponent <Animator>();
+		animator.SetInteger ("evolution", level);
 	}
 	
 	public void playBathing (float time) {
@@ -23,10 +30,10 @@ public class EugenioController : MonoBehaviour {
 		StartCoroutine(playAnimation("bBathing", time));
 	}
 
-	public void playEathing (float time) {
-		callSound(eatingSound);
-		StartCoroutine(playAnimation("bEating", time));
-	}
+//	public void playEathing (float time) {
+//		callSound(eatingSound);
+//		StartCoroutine(playAnimation("bEating", time));
+//	}
 	
 	public void playTakingMedicine (float time) {
 		callSound(takingMedicineSound);
@@ -44,7 +51,7 @@ public class EugenioController : MonoBehaviour {
 	
 	private void callSound (AudioClip sound) {
 		if(soundIsOn)
-			audio.PlayOneShot(sound);
+			this.audio.PlayOneShot(sound);
 	}
 
 	IEnumerator playAnimation (string var, float time) {
@@ -52,4 +59,15 @@ public class EugenioController : MonoBehaviour {
 		yield return new WaitForSeconds(time);
 		animator.SetBool (var, false);
 	}
+
+	public void upgradeUser(){
+		level = user.Level_pet;
+		StartCoroutine("evolution");
+	}
+
+	void evolution(){
+		callSound (evolutionSound);
+		animator.SetInteger ("evolution", level);
+	}
+
 }

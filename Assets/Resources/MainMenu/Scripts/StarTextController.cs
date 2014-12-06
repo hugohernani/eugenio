@@ -5,7 +5,6 @@ using System;
 
 public class StarTextController : MonoBehaviour {
 	private static StarTextController mInstance = null;
-	public GameObject eugenioGO;
 	EugenioController eugenioController;
 	private Animator animator;
 	public float time;
@@ -38,7 +37,6 @@ public class StarTextController : MonoBehaviour {
 		{
 			mInstance = this as StarTextController;
 		}
-		eugenioController = eugenioGO.GetComponent<EugenioController> ();
 		animator = GetComponent <Animator>();
 		text = GetComponent <Text>();
 
@@ -57,7 +55,7 @@ public class StarTextController : MonoBehaviour {
 		}else{
 			text.text = value.ToString();
 			instance.StartCoroutine(instance.playAnimation("bStarTextAnim", time));
-			eugenioController.playEathing(1.5f*time);
+//			eugenioController.playEathing(1.5f*time);
 
 			user.Stars_qty = result;
 			text2.text = result.ToString();

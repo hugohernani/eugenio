@@ -43,7 +43,7 @@ public class ManagerMeasuring : MonoBehaviour {
 	void Start () {
 		itemMeasured = 0;
 		qntS = "";
-		int stage = user.CurrentStage;
+		int stage = userInteraction.getCurrentStage ();
 		applyRuler (stage);
 		applyRulerReference (stage);
 		generateItem ();

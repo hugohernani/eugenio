@@ -22,7 +22,8 @@ public class UserInteraction : MonoBehaviour {
 		messageInteraction = GetComponent<MessageInteraction> ();
 		scoreInteraction = GetComponent<ScoreInteraction> ();
 		eugenioInteraction = GetComponent<EugenioInteraction> ();
-		stage = currentUser.CurrentStage;
+		MainCategory category = (MainCategory)currentUser.CurrentCategory;
+		stage = category.Stage;
 	}
 
 	// Use this for initialization

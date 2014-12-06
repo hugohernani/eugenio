@@ -87,6 +87,8 @@ public abstract class ControlInfoBar : MonoBehaviour{
 	bool flagRectBarDimensionsHasChanged;
 	bool flagSound;
 
+	MainCategory category;
+
 	// Callback
 	void Awake(){
 		mainCamGameObject = GameObject.Find ("Main Camera");
@@ -95,6 +97,14 @@ public abstract class ControlInfoBar : MonoBehaviour{
 		audioSource.volume = 0.6f;
 
 		Aberto (); // abstract method. Subclass implement
+	}
+
+	protected int getFinalValue(){
+		return category.FinalValue;
+	}
+
+	protected int getInitialValue(){
+		return category.InitialValue;
 	}
 
 	/*
@@ -112,7 +122,7 @@ public abstract class ControlInfoBar : MonoBehaviour{
 		totalStage = 10;
 		qtyHit = 0;
 		qtyFail = 0;
-		MainCategory category = (MainCategory) currentUser.getCategory (currentUser.CurrentCategory.Id);
+		category = (MainCategory) currentUser.CurrentCategory;
 		fase = category.Stage;
 
 		timeMessage = 4;

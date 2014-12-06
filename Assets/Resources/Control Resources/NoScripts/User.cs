@@ -14,6 +14,9 @@ public class User {
 	int stars_qty; // moeda
 	string school;
 	string teacher;
+	DateTime created;
+	DateTime updated;
+
 
 	// database hidden relational table
 	List<Dictionary<string,string>> availableFoods;
@@ -45,6 +48,7 @@ public class User {
 	private static object syncRoot = new System.Object();
 	
 	User() {
+		updated = DateTime.Now;
 		currentPetStatus = new Pet ();
 		tasks = new List<Task> ();
 		userDoesList = new List<UserDoes> ();
@@ -147,7 +151,6 @@ public class User {
 		int indexCurrentTask = tasks.LastIndexOf (currentTask);
 		currentTask = tasks.ElementAt (indexCurrentTask+1);
 		currentTask.Available = true; // make the task available
-		tasks [indexCurrentTask + 1] = currentTask;
 		Debug.Log ("Task released: " + currentTask.ToString ()); 
 	}
 
@@ -156,8 +159,8 @@ public class User {
 		int lastCategoryPosition = categories.LastIndexOf(currentCategory);
 		currentCategory = categories.ElementAt(lastCategoryPosition+1);
 		currentCategory.Available = true; // make the category available
-		categories [lastCategoryPosition + 1] = currentCategory;
 		Debug.Log("Category released: " + currentCategory.ToString());
+		releaseNextTask ();
 	}
 
 	public void releaseNextSubCategory()
@@ -167,6 +170,7 @@ public class User {
 		currentSubCategory.Available = true; // make the subCategory available
 		categories [lastSubCategoryPosition + 1] = currentSubCategory;
 		Debug.Log ("SubCategory released: " + currentSubCategory.ToString ());
+		releaseNextTask ();
 	}
 
 	void setUserDoesFromCurrentList (int idTask)
@@ -211,8 +215,10 @@ public class User {
 		}
 
 		if(savedPosition != -1){ // replace
+			Debug.Log("Replacing existed UserDoes");
 			userDoesList[savedPosition] = userDoes;
 		}else{ // add
+			Debug.Log("Adding UserDoes");
 			userDoesList.Add(userDoes);
 			cachedUserDoesList.Add(userDoes);
 		}
@@ -237,18 +243,30 @@ public class User {
 		}
 	}
 
+	public int CalculateExperience ()
+	{
+		int qtyTasksPlayed = 0;
+		foreach(Task task in tasks){
+			if(task.Available){
+				qtyTasksPlayed++;
+			}
+		}
+		return tasks.Count / (qtyTasksPlayed - 1) % 100;
+	}
+
 	public bool RemoveUserTaskFromCachedList(UserDoes taskRelation){
 		return this.cachedUserDoesList.Remove (taskRelation);
 	}
 
 	public void AddTaskByVerification(Task newTask){
 		if(!tasks.Contains(newTask)){
+			Debug.Log("Task added: " + newTask.ToString());
 			tasks.Add(newTask);
 		}
 	}
 	
 	public void AddUserDoesByVerification(UserDoes newUd){
-		if(!userDoesList.Contains(newUd)){
+		if (!userDoesList.Contains(newUd)) {
 			userDoesList.Add(newUd);
 		}
 	}
@@ -379,6 +397,12 @@ public class User {
 		}
 	}
 
+	public int TotalTasks {
+		get {
+			return this.tasks.Count;
+		}
+	}
+	
 	public Task CurrentTask{
 		set{
 			currentTask = value;
@@ -403,6 +427,15 @@ public class User {
 		}
 		set {
 			currentSubCategory = value;
+		}
+	}
+
+	public DateTime Updated {
+		get {
+			return this.updated;
+		}
+		set {
+			updated = value;
 		}
 	}
 

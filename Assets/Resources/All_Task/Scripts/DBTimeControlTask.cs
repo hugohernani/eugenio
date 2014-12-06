@@ -30,7 +30,7 @@ public class DBTimeControlTask : MonoBehaviour {
 
 		Destroy(GameObject.FindGameObjectWithTag("TIMELOADING"));
 
-		restartTime ();
+//		restartTime ();
 
 	}
 

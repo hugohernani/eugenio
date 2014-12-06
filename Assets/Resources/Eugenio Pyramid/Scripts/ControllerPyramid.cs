@@ -78,12 +78,8 @@ public class ControllerPyramid : ControlInfoBar {
 			isWalking[i] = false;	
 		}
 
-		// TODO uncomment
-//		final = user.CurrentStage * 10;
-
-		final = 10;
-		initial = final - 9;
-
+		final = getFinalValue();
+		initial = getInitialValue();
 
 	}
 

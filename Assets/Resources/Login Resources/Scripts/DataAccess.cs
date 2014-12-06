@@ -104,8 +104,8 @@ public class DataAccess: MonoBehaviour{
 		POST (targetUri, userDict);
 		
 		string response = wwwResquest.text;
-		
-		if (response != "") {
+
+		if (response.Substring(0,2) != "-1") {
 			string[] textsplited = response.Split (',');
 			
 			user.Id = int.Parse (textsplited [0]);
@@ -118,26 +118,35 @@ public class DataAccess: MonoBehaviour{
 			user.Stars_qty = int.Parse (textsplited [7]);
 			user.School = textsplited [8];
 			user.Teacher = textsplited [9];
+			user.Updated = DateTime.ParseExact(textsplited[10], "yyyy-MM-dd HH:mm:ss", null);
 			info("Usuario Encontrado. \n Level: " + user.Level_pet.ToString());
-			yield return new WaitForSeconds(1f);
+//			yield return new WaitForSeconds(1f);
 			setPetStatus ();
 			info("Pet carregado.");
-			yield return new WaitForSeconds(1f);
+//			yield return new WaitForSeconds(1f);
 			setAvailableFood (user.Level_pet);
 			info("Comidas disponiveis carregadas.");
-			yield return new WaitForSeconds(1f);
+//			yield return new WaitForSeconds(1f);
 			getAvailableGames ();
 			info("Jogos disponiveis carregados.");
-			yield return new WaitForSeconds(1f);
+//			yield return new WaitForSeconds(1f);
 			retrieveCategories ();
 			info("Categorias de tarefas carregadas.");
-			yield return new WaitForSeconds(1f);
+//			yield return new WaitForSeconds(1f);
 			info("Tarefas carregadas.");
-			
+
+
+
+//			yield return new WaitForSeconds(1f);
+			info("Informacoes adquiridas");
+//			yield return new WaitForSeconds(1f);
+			info("finished");
+
 			yield break;
-			
+
 		} else {
-			
+
+			info(response.Substring(2));
 			yield break;
 		}
 		
@@ -195,12 +204,8 @@ public class DataAccess: MonoBehaviour{
 			this.saveLoad = new SaveLoad(username);
 
 			yield return StartCoroutine(commitFiles ()); // This method will save in database each file saved before when there weren't connection.
-			yield return new WaitForSeconds (3f);
+//			yield return new WaitForSeconds (3f);
 			yield return StartCoroutine(ILoginUser(username, password, action));
-			yield return new WaitForSeconds(1f);
-			action("Informaçoes adquiridas");
-			yield return new WaitForSeconds(1f);
-			action ("finished");
 		}
 		
 	}
@@ -329,11 +334,10 @@ public class DataAccess: MonoBehaviour{
 			category.FinalValue = int.Parse(values[4]);
 			category.Level = int.Parse(values[5]);
 			category.Available = bool.Parse(values[6]);
-			if(category.Available){
-				nextTaskAvailable = true;
-				category.SubCategories = retrieveSubCategories(category, category.Stage);
-			}
-			
+
+			nextTaskAvailable = true;
+			category.SubCategories = retrieveSubCategories(category, category.Stage);
+
 			categories.Add(category);
 		}
 		
@@ -382,6 +386,7 @@ public class DataAccess: MonoBehaviour{
 		string targetUri = serverUriPath + TaskManagerAccessUriPath;
 		targetUri += ("tasks/filter/" + user.Id + "/" + category.Id + "/");
 
+		bool nextStageAvailable = false;
 
 		if (subCategory != null){
 			targetUri += (subCategory.Id + "/");
@@ -406,7 +411,7 @@ public class DataAccess: MonoBehaviour{
 			
 			if(values[5] != "0"){
 				task.Available = (nextTaskAvailable = true);
-				
+
 				string[] udValues = values[5].Split('|');
 				User.UserDoes ud = new User.UserDoes();
 				ud.Id = int.Parse(udValues[0]);
@@ -417,8 +422,7 @@ public class DataAccess: MonoBehaviour{
 				ud.Duration = float.Parse(udValues[5]);
 				ud.Date_user_did = DateTime.ParseExact(udValues[6], "yyyy-MM-dd HH:mm:ss", null);
 				ud.Tentativa = int.Parse(udValues[7]);
-				
-				
+
 				user.AddUserDoesByVerification(ud);
 			}else{
 				task.Available = nextTaskAvailable;
@@ -571,6 +575,7 @@ public class DataAccess: MonoBehaviour{
 		userDict.Add("currentStage", user.CurrentStage.ToString());
 		userDict.Add("currentSubStage",user.CurrentSubStage.ToString());
 		userDict.Add("stars", user.Stars_qty.ToString());
+		userDict.Add("updated", user.Updated.ToString("yyyy-MM-dd HH:mm:ss"));
 
 		return updateUserInfo (userDict);
 
@@ -586,8 +591,9 @@ public class DataAccess: MonoBehaviour{
 			
 			string response = wwwResquest.text;
 			
-			if (response == "1") {
+			if (response != "0" && response.Length >= 1) {
 				Debug.Log ("User updated in the server side");
+				Debug.Log(response);
 				return true;
 			} else {
 				Debug.Log("A problem occured updating the User in the server side");
@@ -633,7 +639,6 @@ public class DataAccess: MonoBehaviour{
 		if(userDoesLoadedList != null)
 			createUpdateUserDoes (userDoesLoadedList);
 	}
-
 
 	// kind of template pattern
 	public void trySaveUserInformationsOnDB ()

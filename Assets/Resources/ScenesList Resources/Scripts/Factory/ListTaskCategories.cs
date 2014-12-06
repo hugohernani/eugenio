@@ -103,8 +103,6 @@ public class ListTaskCategories : ListAbstract {
 			tempList.populate(true);
 		}else{
 			tempList = factory.showList ("Images", gameObject);
-			user.CurrentCategory.Id = item.CategoryId;
-			user.CurrentCategory = user.getCategory(item.CategoryId);
 			tempList.populate(false);
 		}
 

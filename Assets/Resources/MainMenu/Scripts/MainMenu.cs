@@ -14,11 +14,6 @@ public class MainMenu : MonoBehaviour {
 	private readonly float L = 0.25f;
 	private readonly float ML = 0.09f;
 
-	public Slider foodSlider;
-	public Slider healthSlider;
-	public Slider entSlider;
-	public Slider xpSlider;
-
 	private float qtyFood;
 	private float qtyHealth;
 	private float qtyEnt;
@@ -43,12 +38,30 @@ public class MainMenu : MonoBehaviour {
 	/* Decay List */
 	private List<float> decayList;
 
-
 	Pet petStatus;
+	User user;
+
+	EugenioSceneControl eugenioSceneControl;
+
+	public static MainMenu instance;
 
 	void Awake () {
-		DontDestroyOnLoad(transform.gameObject);
-		
+		if(instance == null){
+			instance = this;
+
+			DontDestroyOnLoad(gameObject);
+		}else{
+			Destroy(gameObject);
+		}
+
+		GameObject eugenioSceneGO = GameObject.FindGameObjectWithTag("EugenioSceneControl");
+		if(eugenioSceneGO != null){
+			instance.eugenioSceneControl = eugenioSceneGO.GetComponent<EugenioSceneControl>();
+		}
+
+		user = User.getInstance;
+		petStatus = user.CurrentPetStatus;
+
 		uFood = new float [3];
 		uHealth = new float [3];
 		uEnt = new float [3];
@@ -61,52 +74,45 @@ public class MainMenu : MonoBehaviour {
 
 	void Start(){
 
-		User user = User.getInstance;
-		petStatus = user.CurrentPetStatus;
+		qtyEnt = petStatus.Entertainment;
+		qtyHealth = petStatus.Health;
+		qtyFood = petStatus.Feed;
 
-		healthSlider.value = petStatus.Health;
-		foodSlider.value = petStatus.Feed;
-		entSlider.value = petStatus.Entertainment;
-		xpSlider.value = petStatus.Experience;
+		instance.updateSliderValues();
+
+		InvokeRepeating ("calcDecayRate", 30f, 30f);
+		InvokeRepeating ("applyDecay", 40f, 40f);
+		InvokeRepeating ("updateSliderValues", 60f, 60f);
 
 	}
 
-	void Update () {
-		calcDecayRate();
+	void FixedUpdate () {
 
-		currentTime = Mathf.FloorToInt(Time.time);
-		
-		if ( currentTime > beforeTime &&  currentTime % TIMEDECAY == 0){
-			beforeTime = currentTime;
-			applyDecay();
-		}
-
-		/*qtyFood = foodSlider.value;
-		qtyHealth = happySlider.value;
-		
-		if (qtyFood < 0.50 || qtyHealth < 0.5){
-			ThoughtController.playThinking ();
-		}else {
-			ThoughtController.playNoThinking ();
-		}
-
-		if (qtyFood < 0.50) {
-			ThinkingFoodController.playThinkingFood ();	
-		}else {
-			ThinkingFoodController.playNoThinkingFood ();
-		}
-
-		if (qtyHealth < 0.50) {
-			ThinkingPlayController.playThinkingPlay ();	
-		}else {
-			ThinkingPlayController.playNoThinkingPlay ();
-		}*/
+//
+//		if (qtyFood < 0.50 || qtyHealth < 0.5){
+//			ThoughtController.playThinking ();
+//		}else {
+//			ThoughtController.playNoThinking ();
+//		}
+//
+//		if (qtyFood < 0.50) {
+//			ThinkingFoodController.playThinkingFood ();	
+//		}else {
+//			ThinkingFoodController.playNoThinkingFood ();
+//		}
+//
+//		if (qtyHealth < 0.50) {
+//			ThinkingPlayController.playThinkingPlay ();	
+//		}else {
+//			ThinkingPlayController.playNoThinkingPlay ();
+//		}
 	}
 	
 	void updateSliderValues () {
-		qtyFood = foodSlider.value;
-		qtyHealth = healthSlider.value;
-		qtyEnt = entSlider.value;
+		if(eugenioSceneControl != null){
+			eugenioSceneControl.updateStatusSliders(qtyHealth, qtyEnt, qtyFood);
+			eugenioSceneControl.updateExperienceSlider(user.CalculateExperience());
+		}
 	}
 	
 	void calcFuzzyFicacao () {
@@ -209,7 +215,6 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	void calcDecayRate () {
-		updateSliderValues();
 		createDecayList();
 		
 		calcFuzzyFicacao();
@@ -248,36 +253,21 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	void applyDecay () {
-		print("valor de decayRate e " + decayRate);
-	}
+		Debug.Log ("DecayRate: " + decayRate);
 
-	public static void updatePoints (int value) {
-		StarTextController starTextController = StarTextController.instance;
-	  	StarImageController starImageController = StarImageController.instance;	
-		int result = starTextController.playStarText(value);
-		if(result >= 0){
-			starImageController.playStarImage();
+		if(!float.IsNaN(decayRate)){
+			qtyFood -= decayRate;
+			qtyEnt -= decayRate;
+			qtyHealth -= decayRate;
+			
+			petStatus.Feed = qtyFood;
+			petStatus.Entertainment = qtyEnt;
+			petStatus.Health = qtyHealth;
+			
+			user.CurrentPetStatus = petStatus;
 		}
+
+		Debug.Log (user.CurrentPetStatus.ToString ());
 	}
 
-	public void updateFoodSlider(int value){
-		// TODO Adjust value according to the user level.
-		// uFood ??
-//		foodSlider.value += value;
-	}
-
-	public void updateEntertainmentSlider(int value){
-		// TODO Adjust value according to the user level.
-		entSlider.value += value;
-	}
-
-	public void updateHealthSlider(int value){
-		// TODO Adjust value according to the user level.
-		healthSlider.value += value;
-	}
-
-	public void updateExperienceSlider(int value){
-		// TODO Adjust value according to the user level and/or tasks completed. ???
-		xpSlider.value += value;
-	}
 }
