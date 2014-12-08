@@ -45,6 +45,8 @@ public class MainMenu : MonoBehaviour {
 
 	public static MainMenu instance;
 
+	GameObject helpCanvasGO;
+
 	void Awake () {
 		if(instance == null){
 			instance = this;
@@ -54,13 +56,22 @@ public class MainMenu : MonoBehaviour {
 			Destroy(gameObject);
 		}
 
-		GameObject eugenioSceneGO = GameObject.FindGameObjectWithTag("EugenioSceneControl");
-		if(eugenioSceneGO != null){
-			instance.eugenioSceneControl = eugenioSceneGO.GetComponent<EugenioSceneControl>();
-		}
+		helpCanvasGO = Resources.Load<GameObject>("Control Resources/PREFABS/HelpCanvas");
 
 		user = User.getInstance;
 		petStatus = user.CurrentPetStatus;
+
+		qtyEnt = petStatus.Entertainment;
+		qtyHealth = petStatus.Health;
+		qtyFood = petStatus.Feed;
+
+
+		GameObject eugenioSceneGO = GameObject.FindGameObjectWithTag("EugenioSceneControl");
+		if(eugenioSceneGO != null){
+			Debug.Log("Eugenio em cena");
+			instance.eugenioSceneControl = eugenioSceneGO.GetComponent<EugenioSceneControl>();
+			instance.updateSliderValues();
+		}
 
 		uFood = new float [3];
 		uHealth = new float [3];
@@ -73,13 +84,6 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	void Start(){
-
-		qtyEnt = petStatus.Entertainment;
-		qtyHealth = petStatus.Health;
-		qtyFood = petStatus.Feed;
-
-		instance.updateSliderValues();
-
 		InvokeRepeating ("calcDecayRate", 30f, 30f);
 		InvokeRepeating ("applyDecay", 40f, 40f);
 		InvokeRepeating ("updateSliderValues", 60f, 60f);
@@ -88,31 +92,29 @@ public class MainMenu : MonoBehaviour {
 
 	void FixedUpdate () {
 
-//
-//		if (qtyFood < 0.50 || qtyHealth < 0.5){
-//			ThoughtController.playThinking ();
-//		}else {
-//			ThoughtController.playNoThinking ();
-//		}
-//
-//		if (qtyFood < 0.50) {
-//			ThinkingFoodController.playThinkingFood ();	
-//		}else {
-//			ThinkingFoodController.playNoThinkingFood ();
-//		}
-//
-//		if (qtyHealth < 0.50) {
-//			ThinkingPlayController.playThinkingPlay ();	
-//		}else {
-//			ThinkingPlayController.playNoThinkingPlay ();
-//		}
+		if(Input.GetKeyDown(KeyCode.H)){
+			OpenHelpDialog();
+		}
+
+	}
+
+	void OpenHelpDialog(){
+		GameObject existHelpCanvasGO = GameObject.Find("Help Dialog");
+		if(existHelpCanvasGO == null){
+			GameObject instance = Instantiate(helpCanvasGO) as GameObject;
+			instance.name = "Help Dialog";
+		}else{
+			Destroy(existHelpCanvasGO);
+		}
 	}
 	
 	void updateSliderValues () {
-		if(eugenioSceneControl != null){
-			eugenioSceneControl.updateStatusSliders(qtyHealth, qtyEnt, qtyFood);
-			eugenioSceneControl.updateExperienceSlider(user.CalculateExperience());
+		if(instance.eugenioSceneControl != null){
+			petStatus = user.CurrentPetStatus;
+			instance.eugenioSceneControl.updateStatusSliders(petStatus.Health, petStatus.Entertainment, petStatus.Feed);
+			instance.eugenioSceneControl.updateExperienceSlider(user.CurrentPetStatus.Experience);
 		}
+
 	}
 	
 	void calcFuzzyFicacao () {
@@ -134,7 +136,7 @@ public class MainMenu : MonoBehaviour {
 			uFood[0] = 0;
 			uFood[1] = 0.5f;
 			uFood[2] = 0.5f;
-		}else if (0.75 <= qtyFood && qtyFood < 1) {
+		}else if (0.75 <= qtyFood && qtyFood <= 1) {
 			uFood[0] = 0;
 			uFood[1] = 0;
 			uFood[2] = 1;
@@ -157,7 +159,7 @@ public class MainMenu : MonoBehaviour {
 			uHealth[0] = 0;
 			uHealth[1] = 0.5f;
 			uHealth[2] = 0.5f;
-		}else if (0.75 <= qtyHealth && qtyHealth < 1) {
+		}else if (0.75 <= qtyHealth && qtyHealth <= 1) {
 			uHealth[0] = 0;
 			uHealth[1] = 0;
 			uHealth[2] = 1;
@@ -180,7 +182,7 @@ public class MainMenu : MonoBehaviour {
 			uEnt[0] = 0;
 			uEnt[1] = 0.5f;
 			uEnt[2] = 0.5f;
-		}else if (0.75 <= qtyEnt && qtyEnt < 1) {
+		}else if (0.75 <= qtyEnt && qtyEnt <= 1) {
 			uEnt[0] = 0;
 			uEnt[1] = 0;
 			uEnt[2] = 1;
@@ -214,12 +216,18 @@ public class MainMenu : MonoBehaviour {
 		this.decayRate = sumY / sumR;
 	}
 
+
 	void calcDecayRate () {
+		// TODO Nao calcular se qtyFood for menor ou igual a 0.
+		// TODO Nao calcular se qtyEnt for menor ou igual a 0.
+		// TODO Nao calcular se qtyHealth for menor ou igual a 0.
+
 		createDecayList();
 		
 		calcFuzzyFicacao();
 		calcInference();
 		calcDefuzzyFicacao ();
+
 	}
 
 	void createDecayList () {
@@ -259,10 +267,13 @@ public class MainMenu : MonoBehaviour {
 			qtyFood -= decayRate;
 			qtyEnt -= decayRate;
 			qtyHealth -= decayRate;
-			
-			petStatus.Feed = qtyFood;
-			petStatus.Entertainment = qtyEnt;
-			petStatus.Health = qtyHealth;
+
+			if(qtyFood >= 0)
+				petStatus.Feed = qtyFood;
+			if(qtyEnt >= 0)
+				petStatus.Entertainment = qtyEnt;
+			if(qtyHealth >= 0)
+				petStatus.Health = qtyHealth;
 			
 			user.CurrentPetStatus = petStatus;
 		}

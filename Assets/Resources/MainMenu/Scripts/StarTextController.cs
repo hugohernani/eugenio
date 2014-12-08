@@ -6,15 +6,11 @@ using System;
 public class StarTextController : MonoBehaviour {
 	private static StarTextController mInstance = null;
 	EugenioController eugenioController;
-	private Animator animator;
 	public float time;
 	private Text text;
 	public Text text2;
 	private int result;
-
-	User user;
-
-
+	
 	public static StarTextController instance
 	{
 		get
@@ -37,35 +33,19 @@ public class StarTextController : MonoBehaviour {
 		{
 			mInstance = this as StarTextController;
 		}
-		animator = GetComponent <Animator>();
 		text = GetComponent <Text>();
-
-		user = User.getInstance;
-		text2.text = user.Stars_qty.ToString();
-
 	}
 
-	public int playStarText (int value) {
+	public void updateStarValue(int value){
+		text2.text = value.ToString();
+	}
+
+	public int changeStarText (int value) {
 		result = Int32.Parse(text2.text) - value;
-
-		if(result < 0){
-			// TODO David, change this according to your animation name to deal with not enough money to buy food.
-			instance.StartCoroutine(instance.playAnimation("NOT_ENOUGH_MONEY", time));
-			return result;
-		}else{
+		if(result > 0){
 			text.text = value.ToString();
-			instance.StartCoroutine(instance.playAnimation("bStarTextAnim", time));
-//			eugenioController.playEathing(1.5f*time);
-
-			user.Stars_qty = result;
 			text2.text = result.ToString();
-			return result;
 		}
-	}
-
-	IEnumerator playAnimation (string var, float time) {
-		animator.SetBool (var, true);
-		yield return new WaitForSeconds(time);
-		animator.SetBool (var, false);
+		return result;
 	}
 }

@@ -3,9 +3,9 @@ using System.Collections;
 
 public class EugenioController : MonoBehaviour {
 	private Animator animator;
-	private int level = 1;
+	private int level = 0;
 
-	// To change	
+	// To change
 	private bool soundIsOn = true;
 
 	/* AudioClip properties */
@@ -18,22 +18,23 @@ public class EugenioController : MonoBehaviour {
 	User user = User.getInstance;
 
 	void Awake () {
-		level = user.Level_pet;
+		level = user.Level_pet + 1;
 		GameObject mainCameraGO = GameObject.Find ("Main Camera");
 		this.audio = mainCameraGO.GetComponent<AudioSource> ();
 		animator = GetComponent <Animator>();
 		animator.SetInteger ("evolution", level);
+
 	}
-	
+
 	public void playBathing (float time) {
 		callSound(bathingSound);
 		StartCoroutine(playAnimation("bBathing", time));
 	}
 
-//	public void playEathing (float time) {
-//		callSound(eatingSound);
-//		StartCoroutine(playAnimation("bEating", time));
-//	}
+	public void playEathing (float time) {
+		callSound(eatingSound);
+		StartCoroutine(playAnimation("bEating", time));
+	}
 	
 	public void playTakingMedicine (float time) {
 		callSound(takingMedicineSound);
@@ -53,6 +54,7 @@ public class EugenioController : MonoBehaviour {
 		if(soundIsOn)
 			this.audio.PlayOneShot(sound);
 	}
+
 
 	IEnumerator playAnimation (string var, float time) {
 		animator.SetBool (var, true);

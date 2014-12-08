@@ -69,10 +69,6 @@ public class ListTaskCategories : ListAbstract {
 		return posAcumulator;
 	}
 
-	protected override int finishClick (int value)
-	{
-		return value;
-	}
 
 	void repopulate(ItemCategory item){
 
@@ -84,22 +80,28 @@ public class ListTaskCategories : ListAbstract {
 		if(item.Categories != null){ // It has SubCategories
 
 			List<Item> items = new List<Item> ();
-			
+
 			foreach (Category category in item.Categories) {
-				MathSubCategory subCategory = (MathSubCategory) category;
-				Item newItemcategory = new ItemCategory(
-					subCategory.ToString(),
-					subCategory.Available,
-					subCategory.SubCategories,
-					item.CategoryId
-					);
-				items.Add(newItemcategory);
+				Task task = user.getTask(item.CategoryId, category.Id);
+
+				MathSubCategory subCategory = (MathSubCategory) user.getSubCategory(category.Id);
+				user.CurrentSubCategory = subCategory;
+
+				string nameItem = task.Name + "\n" + subCategory.ToString();
+
+				Item ItemCategory = new ItemCategory(
+					nameItem,
+					task.Available,
+					null,
+					item.CategoryId);
+
+				items.Add(ItemCategory);
+
 			}
 
 			tempList = factory.showList("subCategories", gameObject);
 			tempList.Items = items;
 
-			user.CurrentSubCategory = user.getSubCategory (item.CategoryId);
 			tempList.populate(true);
 		}else{
 			tempList = factory.showList ("Images", gameObject);

@@ -52,21 +52,14 @@ public class ListSubCategories : ListAbstract {
 		}
 		return posAcumulator;
 	}
-	
-	protected override int finishClick (int value)
-	{
-		return value;
-	}
 
 	void callScene(ItemCategory item){
 		User user = User.getInstance;
 
-		user.CurrentTask = user.getTask(item.Name, user.CurrentCategory.Id, user.CurrentSubCategory.Id);
+		user.CurrentTask = user.getTask(user.CurrentCategory.Id, user.CurrentSubCategory.Id);
 		
-		ListAbstract.SHOWING = false;
-
 		Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
-		Application.LoadLevel(item.Name);
+		Application.LoadLevel ("Operacoes");
 
 	}
 	

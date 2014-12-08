@@ -4,7 +4,7 @@ using System.Collections;
 
 public class DBTimeControlTask : MonoBehaviour {
 
-	static float TIMESCENE;
+	float TIMESCENE;
 
 	void Awake(){
 		DontDestroyOnLoad (gameObject);
@@ -16,26 +16,11 @@ public class DBTimeControlTask : MonoBehaviour {
 		TIMESCENE = Time.timeSinceLevelLoad;
 	}
 
-	public static void END_TASK(){
-
-		DateTime dateUserEndTask = DateTime.Now;
-		
-		Debug.Log (dateUserEndTask.ToString());
-
+	void OnDestroy(){
 		User user = User.getInstance;
-
-//		user.SaveTaskHits ();
-
-		user.SaveTaskDateAdnDuration(TIMESCENE, dateUserEndTask);
-
-		Destroy(GameObject.FindGameObjectWithTag("TIMELOADING"));
-
-//		restartTime ();
-
+		
+		user.SaveTaskHits ();
+		
+		user.SaveTaskDateAdnDuration(TIMESCENE);
 	}
-
-	public static void restartTime(){
-		TIMESCENE = 0.0f;
-	}
-
 }

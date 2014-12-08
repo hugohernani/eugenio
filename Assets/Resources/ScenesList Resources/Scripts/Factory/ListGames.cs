@@ -24,7 +24,8 @@ public class ListGames : ListAbstract {
 		foreach (Game game in games) {
 			Item item = new GameItem(
 				game.Name,
-				Resources.Load<Sprite> (resourceGameItem + game.Name)
+				Resources.Load<Sprite> (resourceGameItem + game.Name),
+				game.Available
 				);
 			items.Add(item);
 		}
@@ -45,10 +46,15 @@ public class ListGames : ListAbstract {
 			GameItem gameItem = items[newInt] as GameItem;
 			
 			newItem.GetComponent<Image>().sprite = gameItem.Sprite;
+
+			if(gameItem.Available){
+				Destroy(newItem.GetChild(0).gameObject);
+				UnityAction clickAction = () => {callScene(gameItem);};
+				newItem.GetComponentInChildren<Button>().onClick.AddListener(clickAction);
+			}
+
 			
-			UnityAction clickAction = () => {callScene(gameItem);};
-			newItem.GetComponentInChildren<Button>().onClick.AddListener(clickAction);
-			
+
 			newItem.parent = container.transform;
 			
 			newItem.offsetMax = Vector2.zero;
@@ -60,11 +66,6 @@ public class ListGames : ListAbstract {
 			posAcumulator += heightItem;
 		}
 		return posAcumulator;
-	}
-	
-	protected override int finishClick (int value)
-	{
-		return value;
 	}
 	
 	void callScene(GameItem item){

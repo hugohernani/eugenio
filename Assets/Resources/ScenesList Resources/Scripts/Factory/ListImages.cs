@@ -68,22 +68,20 @@ public class ListImages : ListAbstract {
 		return posAcumulator;
 	}
 
-	protected override int finishClick (int value)
-	{
-		return value;
-	}
 
 	void callScene(ItemImages item){
 
 		user.CurrentTask = user.getTask (item.Name, user.CurrentCategory.Id);
 
-		user.SaveTaskName(item.Name);
+		user.StartSavingTask();
 
-		ListAbstract.SHOWING = false;
-
-		Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
 		Application.LoadLevel (item.Name);
 
+		GameObject persistenceTask = Resources.Load<GameObject> ("All_Task/prefab/TASK_RUNNING");
+
+		Instantiate (persistenceTask);
+
+		Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
 	}
 
 

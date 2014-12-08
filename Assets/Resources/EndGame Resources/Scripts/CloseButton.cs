@@ -21,6 +21,10 @@ public class CloseButton : MonoBehaviour {
 	}
 
 	void closeApplication(){
+
+		Destroy (GameObject.FindGameObjectWithTag ("TIMELOADING"));
+
+		Destroy (GameObject.FindGameObjectWithTag("TaskMainObject"));
 		Application.LoadLevel ("MainMenu");
 	}
 	

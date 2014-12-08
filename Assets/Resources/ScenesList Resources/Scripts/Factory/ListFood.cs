@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Events;
@@ -6,16 +7,17 @@ using UnityEngine.UI;
 
 public class ListFood : ListAbstract {
 
+	bool chosen;
+	int foodValue;
+
 	RectTransform containerFoodPrefab;
 	RectTransform containerFood;
 
 	RectTransform mainContainer;
 
-
 	RectTransform itemPreFabN;
 	string resourceFoodImages;
-	public static ItemFood food;
-	public static bool Bought;
+
 
 	void Awake(){
 		itemPreFabN = Resources.Load<RectTransform> (PREFAB_RESOURCES + "itemToBuy");
@@ -78,17 +80,9 @@ public class ListFood : ListAbstract {
 		return posAcumulator;
 	}
 
-	protected override int finishClick (int value)
-	{
-		return value;
-	}
-
 	void clickFood(ItemFood food){
 
-		ListFood.food = food;
-
 		clean ();
-		justHide ();
 
 		mainContainer = GameObject.Find ("CanvasList").GetComponent<RectTransform> ();
 
@@ -97,8 +91,8 @@ public class ListFood : ListAbstract {
 		containerFood.FindChild ("ItemIcon").GetComponent<Image> ().sprite = food.Icon;
 		containerFood.FindChild ("ImageValue").GetComponentInChildren<Text> ().text = food.Value.ToString ();
 
-		UnityAction clickConfirm = () => {FoodBought(containerFood.gameObject, true);};
-		UnityAction clickCancel = () => {FoodBought(containerFood.gameObject, false);};
+		UnityAction clickConfirm = () => {FoodBought(containerFood.gameObject, true, food);};
+		UnityAction clickCancel = () => {FoodBought(containerFood.gameObject, false, food);};
 
 		containerFood.FindChild("ConfirmButton").GetComponent<Button>().onClick.AddListener(clickConfirm);
 		containerFood.FindChild("CancelButton").GetComponent<Button>().onClick.AddListener(clickCancel);
@@ -109,11 +103,24 @@ public class ListFood : ListAbstract {
 
 	}
 
-	void FoodBought(GameObject containerGO, bool bought){
-		ListFood.Bought = bought;
+	void FoodBought(GameObject containerGO, bool bought, ItemFood food){
+		this.chosen = true;
+		if(bought){
+			this.foodValue = food.Value;
+		}else
+			this.foodValue = -1;
+
 		Destroy (containerGO);
 		Destroy (this);
+
 	}
 
+	public IEnumerator getResult(Action<int> result){
+		while(!this.chosen){
+			yield return new WaitForSeconds(1f);
+		}
+		result (foodValue);
+		yield break;
+	}
 
 }

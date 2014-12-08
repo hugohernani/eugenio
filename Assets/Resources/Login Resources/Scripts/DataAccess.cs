@@ -124,18 +124,16 @@ public class DataAccess: MonoBehaviour{
 			setPetStatus ();
 			info("Pet carregado.");
 //			yield return new WaitForSeconds(1f);
-			setAvailableFood (user.Level_pet);
+			getAvailableFoods (user.Level_pet);
 			info("Comidas disponiveis carregadas.");
 //			yield return new WaitForSeconds(1f);
-			getAvailableGames ();
+			getAvailableGames (user.Level_pet);
 			info("Jogos disponiveis carregados.");
 //			yield return new WaitForSeconds(1f);
 			retrieveCategories ();
 			info("Categorias de tarefas carregadas.");
 //			yield return new WaitForSeconds(1f);
 			info("Tarefas carregadas.");
-
-
 
 //			yield return new WaitForSeconds(1f);
 			info("Informacoes adquiridas");
@@ -209,8 +207,8 @@ public class DataAccess: MonoBehaviour{
 		}
 		
 	}
-	
-	void setAvailableFood(int level){
+
+	public void getAvailableFoods(int level){
 		string targetUri = serverUriPath + foodAccessUriPath;
 		targetUri += ("filter/" + level + "/");
 		
@@ -290,9 +288,9 @@ public class DataAccess: MonoBehaviour{
 		}
 	}
 
-	void getAvailableGames(){
+	public void getAvailableGames(int level){
 		string targetUri = serverUriPath + GameAccessUriPath;
-		targetUri += "all/";
+		targetUri += ("all/" + level.ToString() + "/");
 		
 		GET (targetUri);
 		string response = wwwResquest.text;
@@ -307,7 +305,9 @@ public class DataAccess: MonoBehaviour{
 				Game game = new Game();
 				game.Id = int.Parse(values[0]);
 				game.Name = values[1];
+				game.Available = bool.Parse(values[2]);
 				games.Add(game);
+				Debug.Log(game.ToString());
 			}
 		}
 		
@@ -406,9 +406,7 @@ public class DataAccess: MonoBehaviour{
 				task.SubCategoryId = int.Parse(values[4]);
 			else
 				task.SubCategoryId = 0;
-			
-			user.AddTaskByVerification(task);
-			
+
 			if(values[5] != "0"){
 				task.Available = (nextTaskAvailable = true);
 
@@ -416,7 +414,7 @@ public class DataAccess: MonoBehaviour{
 				User.UserDoes ud = new User.UserDoes();
 				ud.Id = int.Parse(udValues[0]);
 				ud.UserId = int.Parse(udValues[1]);
-				ud.TaskId = int.Parse(udValues[2]);
+				ud.TaskId = task.Id;
 				ud.Hits = int.Parse(udValues[3]);
 				ud.Stars = int.Parse(udValues[4]);
 				ud.Duration = float.Parse(udValues[5]);
@@ -427,11 +425,12 @@ public class DataAccess: MonoBehaviour{
 			}else{
 				task.Available = nextTaskAvailable;
 				nextTaskAvailable = false;
-				
 			}
+
+			user.AddTaskByVerification(task);
 			
 		}
-		
+
 	}
 	
 	void retrieveUserDoes(int task_id){
@@ -643,24 +642,28 @@ public class DataAccess: MonoBehaviour{
 	// kind of template pattern
 	public void trySaveUserInformationsOnDB ()
 	{
-		this.saveLoad = new SaveLoad (user.Name);
-		int qntSuccess = 0;
-		if(updateUserInfo()){
-			qntSuccess++;
-		}
-
-		if(updatePetStatus(user.CurrentPetStatus)){
-			qntSuccess++;
-		}
-
-		if(createUpdateUserDoes()){
-			qntSuccess++;
-		}
-
-		if(qntSuccess != 3){
-			updateInfoInDatabaseFromFile(saveLoad);
+		if(user != null){
+			this.saveLoad = new SaveLoad (user.Name);
+			int qntSuccess = 0;
+			if(updateUserInfo()){
+				qntSuccess++;
+			}
+			
+			if(updatePetStatus(user.CurrentPetStatus)){
+				qntSuccess++;
+			}
+			
+			if(createUpdateUserDoes()){
+				qntSuccess++;
+			}
+			
+			if(qntSuccess != 3){
+				updateInfoInDatabaseFromFile(saveLoad);
+			}else{
+				Debug.Log("All information saved");
+			}
 		}else{
-			Debug.Log("All information saved");
+			// TODO something.
 		}
 	}
 	

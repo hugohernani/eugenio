@@ -9,8 +9,6 @@ using UnityEngine.UI;
  */
 public class MessagePointReceiver : MonoBehaviour {
 
-	GameObject endTaskGameObject;
-
 	public Sprite eugenioFeliz;
 	public Sprite eugenioTriste;
 
@@ -38,7 +36,8 @@ public class MessagePointReceiver : MonoBehaviour {
 	 * Get UsetInstance.
 	 */
 	void Awake(){
-		endTaskGameObject = GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT");
+		GameObject taskRunningGO = GameObject.FindGameObjectWithTag ("TIMELOADING"); // Do not erase this code.
+		Destroy (taskRunningGO);
 
 		pointValue = GameObject.Find("Value").GetComponent<Text> ();
 		messageEnd = GameObject.Find ("MessageText").GetComponent<Text> ();
@@ -55,12 +54,16 @@ public class MessagePointReceiver : MonoBehaviour {
 	 * 
 	 */
 	void Start () {
+
 		value = user.TaskPoints;
 
-		if(user.StarsStage < value)
+		if(user.StarsStage < value){
 			user.StarsStage = value;
+		}
 
 		int userStars = user.StarsStage;
+
+		user.Stars_qty += userStars;
 
 		int diffOtherAtempt = Math.Abs(userStars - value);
 
@@ -131,7 +134,10 @@ public class MessagePointReceiver : MonoBehaviour {
 	 */
 	public void GoBackScene(){
 		Application.LoadLevel (user.CurrentTask.Name);
-		Destroy(endTaskGameObject);
+		user.StartSavingTask ();
+
+		GameObject persistenceTask = Resources.Load<GameObject> ("All_Task/prefab/TASK_RUNNING");
+		Instantiate (persistenceTask);
 	}
 
 	/*
@@ -139,7 +145,6 @@ public class MessagePointReceiver : MonoBehaviour {
 	 */
 	public void GoMainScene(){
 		Application.LoadLevel ("MainMenu");
-		Destroy(endTaskGameObject);
 	}
 
 

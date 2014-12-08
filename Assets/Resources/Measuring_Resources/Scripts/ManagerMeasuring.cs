@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class ManagerMeasuring : MonoBehaviour {
 
-	User user;
 	UserInteraction userInteraction;
 	MessageInteraction messageInteraction;
 	DisplayNumberUser displayNumber;
@@ -30,7 +29,6 @@ public class ManagerMeasuring : MonoBehaviour {
 	int multiplier;
 
 	void Awake(){
-		user = User.getInstance;
 		GameObject manager = GameObject.Find ("Manager");
 		userInteraction = manager.GetComponent<UserInteraction> ();
 		messageInteraction = manager.GetComponent<MessageInteraction> ();

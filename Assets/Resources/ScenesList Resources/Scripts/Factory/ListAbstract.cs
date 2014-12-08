@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections.Generic;
 
 public abstract class ListAbstract: MonoBehaviour{
@@ -9,14 +10,8 @@ public abstract class ListAbstract: MonoBehaviour{
 	protected readonly string ITEM_RESOURCES = "ScenesList Resources/textures/";
 
 	RectTransform scenesContainerRect;
-	//	protected RectTransform itemPrefab;
-
-	public static bool SHOWING = false;
-
-	public static bool SubCategoryTask = false;
 
 	public void clean(){
-
 		removeAllFromContainer ();
 		
 	}
@@ -27,7 +22,7 @@ public abstract class ListAbstract: MonoBehaviour{
 		}
 	}
 	
-	public int populate(bool repopulate = false){
+	public void populate(bool repopulate = false){
 
 		scenesContainerRect = (RectTransform)GameObject.Find ("ScenesContainer").GetComponent<RectTransform> ();
 
@@ -51,32 +46,22 @@ public abstract class ListAbstract: MonoBehaviour{
 		}
 		float posAcumulator = populateContainer (items, scenesContainerRect);
 		adjustBoxSize (posAcumulator/dividerContainer);
-		return 	finishClick ();
 	}
 	
 	protected abstract List<Item> populateList ();
 	
 	protected abstract float populateContainer(List<Item> items, RectTransform container);
-	
-	protected abstract int finishClick (int value = -1);
-	
+
 	protected void adjustBoxSize(float posMultiplied){
 		scenesContainerRect.offsetMin = new Vector2 (scenesContainerRect.offsetMin.x, -posMultiplied);
 	}
 
-	protected void justHide(){
-		ListAbstract.SHOWING = false;
-	}
-
 	protected void hide(){
-		ListAbstract.SHOWING = false;
-
 		Destroy (this);
 	}
 
-	public int finish ()
-	{
-		return finishClick();
+	public RectTransform getContainerItems(){
+		return scenesContainerRect;
 	}
 
 	public List<Item> Items {

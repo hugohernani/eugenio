@@ -104,9 +104,20 @@ public class User {
 		return null;
 	}
 
+	public Task getTask(int mainCategoryId, int subCategoryId){
+		foreach(Task task in tasks){
+			if(task.CategoryId == mainCategoryId && task.SubCategoryId == subCategoryId){
+				Debug.Log("T: " + task.ToString());
+				return task;
+			}
+		}
+		return null;
+	}
+
 	public Task getTask(string name, int mainCategoryId, int subCategoryId){
 		foreach(Task task in tasks){
 			if(task.Name == name && task.CategoryId == mainCategoryId && task.SubCategoryId == subCategoryId){
+				Debug.Log(task.ToString());
 				return task;
 			}
 		}
@@ -145,9 +156,6 @@ public class User {
 	}
 
 	public void releaseNextTask(){
-		// TODO It is possible to save this current task in the database from here before jumping to the next
-		DBTimeControlTask.END_TASK ();
-
 		int indexCurrentTask = tasks.LastIndexOf (currentTask);
 		currentTask = tasks.ElementAt (indexCurrentTask+1);
 		currentTask.Available = true; // make the task available
@@ -173,26 +181,24 @@ public class User {
 		releaseNextTask ();
 	}
 
-	void setUserDoesFromCurrentList (int idTask)
+	void setUserDoesFromCurrentList ()
 	{
 		foreach (UserDoes ud in userDoesList) {
-			if(ud.TaskId == idTask && ud.UserId == this.id){
+			if(ud.TaskId == currentTask.Id && ud.UserId == this.id){
+				Debug.Log("Existed userDoes: " + ud.ToString());
 				this.starsStage = ud.Stars;
 				tempUserDoes = ud;
+				return;
 			}
 		}
+		this.starsStage = 0;
 	}
 
-	public void SaveTaskName(string name){
+	public void StartSavingTask(){
 		tempUserDoes.UserId = this.id;
-		int idTask = 0;
-		foreach (Task task in tasks) {
-			if(task.Name == name)
-				idTask = task.Id;
-		}
-		tempUserDoes.TaskId = idTask;
+		tempUserDoes.TaskId = currentTask.Id;
 		if(userDoesList.Count != 0){
-			setUserDoesFromCurrentList(idTask);
+			setUserDoesFromCurrentList();
 		}
 
 	}
@@ -201,9 +207,9 @@ public class User {
 		tempUserDoes.Hits = this.taskPoints;
 	}
 
-	public void SaveTaskDateAdnDuration(float duration, DateTime date_open){
+	public void SaveTaskDateAdnDuration(float duration){
 		tempUserDoes.Duration = duration;
-		tempUserDoes.Date_user_did = date_open;
+		tempUserDoes.Date_user_did = DateTime.Now;;
 		tempUserDoes.Stars = this.starsStage;
 		
 		UserDoes userDoes = tempUserDoes; // separate in memory.
@@ -243,7 +249,7 @@ public class User {
 		}
 	}
 
-	public int CalculateExperience ()
+	public float CalculateExperience ()
 	{
 		int qtyTasksPlayed = 0;
 		foreach(Task task in tasks){
@@ -251,8 +257,19 @@ public class User {
 				qtyTasksPlayed++;
 			}
 		}
-		return tasks.Count / (qtyTasksPlayed - 1) % 100;
+		float result = (tasks.Count / (qtyTasksPlayed - 1)) / 100;
+		currentPetStatus.Experience = result;
+		Debug.Log(result);
+		return result;
 	}
+
+//	public int CalculateMoney(){
+//		int qtyMoney = 0;
+//		foreach (User.UserDoes ud in userDoesList) {
+//			qtyMoney += ud.Stars;
+//		}
+//		return qtyMoney;
+//	}
 
 	public bool RemoveUserTaskFromCachedList(UserDoes taskRelation){
 		return this.cachedUserDoesList.Remove (taskRelation);
@@ -260,7 +277,6 @@ public class User {
 
 	public void AddTaskByVerification(Task newTask){
 		if(!tasks.Contains(newTask)){
-			Debug.Log("Task added: " + newTask.ToString());
 			tasks.Add(newTask);
 		}
 	}

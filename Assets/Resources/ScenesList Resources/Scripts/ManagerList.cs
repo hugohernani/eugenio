@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class ManagerList : MonoBehaviour {
@@ -7,13 +9,14 @@ public class ManagerList : MonoBehaviour {
 
 	ListFactory factory;
 
-	int result;
 	bool error = false;
 
 	Vector2 minLimit;
 	Vector2 maxLimit;
 
 	string category = "";
+
+	ListAbstract list;
 
 	public enum TypeList: int{
 		Tasks = 1,
@@ -28,34 +31,26 @@ public class ManagerList : MonoBehaviour {
 
 	}
 
-	public void FoodsList(){
+	public IEnumerator FoodsList(Func<int, int> method){
 		showList (TypeList.Foods);
+		yield return StartCoroutine (bringContainer());
+		
+		yield return StartCoroutine(GetComponent<ListFood>().getResult((result) => {
+			if(result != -1){
+				method(result);
+			}
+		}));
+		yield return StartCoroutine (hideContainer ());
 	}
 
 	public void TasksList(){
+		StartCoroutine (bringContainer());
 		showList (TypeList.Tasks);
 	}
 
 	public void GamesList(){
+		StartCoroutine (bringContainer());
 		showList (TypeList.Games);
-	}
-
-	void showList(string category){
-
-		this.category = category;
-		factory = gameObject.AddComponent<ListFactory> ();
-		ListAbstract.SHOWING = true;
-		
-		ListAbstract list = null;
-		try {
-			list = (ListAbstract) factory.showList (category, gameObject);
-			list.populate ();
-		} catch (ExitGUIException) {
-			ListAbstract.SHOWING = false;
-			error = true;
-			throw new System.Exception("Tipo de lista invalido. Tente 'task' ou 'food'\n" +
-			                           "Ou use alguns dos inteiros em ManagerList.TypeList.");
-		}
 	}
 
 	void showList(TypeList typeList){
@@ -72,59 +67,35 @@ public class ManagerList : MonoBehaviour {
 			category = "Games";
 			break;
 		}
-		ListAbstract.SHOWING = true;
 		factory = gameObject.AddComponent<ListFactory> ();
 		
-		ListAbstract list = (ListAbstract) factory.showList (category, gameObject);
+		list = (ListAbstract) factory.showList (category, gameObject);
 		
 		list.populate ();
 	}
 
-
-	public int catchResult(){
-		if(error)
-			throw new System.Exception("There was a error. Try to recreate the list");
-		else
-			return result;
-	}
-
-	void Update(){
-		if(ListAbstract.SHOWING){
-			bringContainer();
-		}else{
-			hideContainer();
-			if(ListFood.Bought){
-				ListFood.Bought = false;
-				result = ListFood.food.Value;
-				EugenioSceneControl.updatePoints(result);
-			}else{
-				result = -1;
-			}
-		}
-	}
-
-	void bringContainer(){
-		if (RectTransformScrollView.offsetMin.y >= 1){
+	IEnumerator bringContainer(){
+		while(RectTransformScrollView.offsetMin.y >= 1){
 			RectTransformScrollView.offsetMax = Vector2.Lerp(RectTransformScrollView.offsetMax, Vector2.zero, Time.deltaTime * 2.2f);
 			RectTransformScrollView.offsetMin = Vector2.Lerp(RectTransformScrollView.offsetMin, Vector2.zero, Time.deltaTime * 2.2f);
-		}else{
-			RectTransformScrollView.offsetMax = Vector2.zero;
-			RectTransformScrollView.offsetMin = Vector2.zero;
+			yield return true;
 		}
+		RectTransformScrollView.offsetMax = Vector2.zero;
+		RectTransformScrollView.offsetMin = Vector2.zero;
+		yield break;
 	}
 
-	void hideContainer(){
-		if (RectTransformScrollView.offsetMin.y <= minLimit.y - 50){
+	IEnumerator hideContainer(){
+		while(RectTransformScrollView.offsetMin.y <= minLimit.y - 50){
 			RectTransformScrollView.offsetMax = Vector2.Lerp(RectTransformScrollView.offsetMax, maxLimit, Time.deltaTime * 2.2f);
 			RectTransformScrollView.offsetMin = Vector2.Lerp(RectTransformScrollView.offsetMin, minLimit, Time.deltaTime * 2.2f);
-		}else{
-			RectTransformScrollView.offsetMax = maxLimit;
-			RectTransformScrollView.offsetMin = minLimit;
+			yield return true;
 		}
+		RectTransformScrollView.offsetMax = maxLimit;
+		RectTransformScrollView.offsetMin = minLimit;
 
 		Destroy (factory);
-//		Destroy (ListFactory);
-
+		yield break;
 	}
 
 }
