@@ -26,19 +26,22 @@ public class EugenioController : MonoBehaviour {
 
 	}
 
-	public void playBathing (float time) {
+	public bool playBathing (float time) {
 		callSound(bathingSound);
 		StartCoroutine(playAnimation("bBathing", time));
+		return true;
 	}
 
-	public void playEathing (float time) {
+	public bool playEathing (float time) {
 		callSound(eatingSound);
 		StartCoroutine(playAnimation("bEating", time));
+		return true;
 	}
 	
-	public void playTakingMedicine (float time) {
+	public bool playTakingMedicine (float time) {
 		callSound(takingMedicineSound);
 		StartCoroutine(playAnimation("bTakingMedicine", time));
+		return true;
 	}
 	
 	public void playEvolution (float time) {
@@ -70,6 +73,12 @@ public class EugenioController : MonoBehaviour {
 	void evolution(){
 		callSound (evolutionSound);
 		animator.SetInteger ("evolution", level);
+	}
+
+	public int Level {
+		get {
+			return this.level;
+		}
 	}
 
 }

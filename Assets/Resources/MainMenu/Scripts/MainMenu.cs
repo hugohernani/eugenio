@@ -264,6 +264,8 @@ public class MainMenu : MonoBehaviour {
 		Debug.Log ("DecayRate: " + decayRate);
 
 		if(!float.IsNaN(decayRate)){
+			petStatus = user.CurrentPetStatus;
+
 			qtyFood -= decayRate;
 			qtyEnt -= decayRate;
 			qtyHealth -= decayRate;

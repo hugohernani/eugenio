@@ -1,22 +1,28 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 public class EugenioSceneControl : MonoBehaviour {
-
 	public Slider foodSlider;
 	public Slider healthSlider;
 	public Slider entSlider;
 	public Slider xpSlider;
 
+	User user;
 	EugenioController eugenioController;
 	Thoughts thoughtsController;
 	Animator baloonAnimator;
 
 	string thinkingAnimationName;
 
+	const int max_increase_value = 20;
+	List<int> foodsPrices;
+	List<int> medicineValues; // {1,2,3,5,8,13}); // TODO Adjust these values;
+	List<int> bathingValues; // {1,2,3,5,8,13}; // TODO Adjust these values;
+
 	void Awake(){
+		foodsPrices = new List<int> ();
 
 		baloonAnimator = GameObject.Find ("Baloon").GetComponent<Animator> ();
 
@@ -26,7 +32,7 @@ public class EugenioSceneControl : MonoBehaviour {
 		eugenioController = GetComponent<EugenioController>();
 		thoughtsController = GetComponentInChildren<Thoughts> ();
 
-		User user = User.getInstance;
+		user = User.getInstance;
 		MainCategory userCurrentCategory = ((MainCategory)user.CurrentCategory);
 		
 		if (userCurrentCategory != null) {
@@ -55,6 +61,10 @@ public class EugenioSceneControl : MonoBehaviour {
 	}
 
 	void Start(){
+		foreach(Dictionary<string, string> dicFood in user.AvailableFoods){
+			foodsPrices.Add(int.Parse(dicFood["value"]));
+		}
+
 		InvokeRepeating ("Thinking", 60f, 60f);
 	}
 
@@ -83,51 +93,135 @@ public class EugenioSceneControl : MonoBehaviour {
 		}
 	}
 
-	public void foodClick(ManagerList managerList){
-		StartCoroutine
-		(
-				managerList.FoodsList (FoodBought)
-		);
+	void updateStatus(int fixedValueIncrease, Slider sliderStatus){
+	
+		int level = user.Level_pet + 1; // to deal with level 0.
+		float porcentage = fixedValueIncrease / level;
+		float p_increase = max_increase_value * porcentage/100;
+		float final_result = sliderStatus.value + p_increase;
 
+		sliderStatus.value = final_result;
+		updateStatusSliders ();
 	}
 
-	int FoodBought(int value){
+	void updateStatus(int valueToSearch, ref List<int> listReference, Slider sliderStatus){
+		int indice_from_1 = listReference.IndexOf (valueToSearch) + 1; // to deal with level 0
+		int level = user.Level_pet + 1; // to deal with level 0.
+		float porcentage = indice_from_1 / level;
+		float value_food_slider_increased = max_increase_value * porcentage/100;
+		float final_result = sliderStatus.value + value_food_slider_increased;
+		
+		sliderStatus.value = final_result;
+		updateStatusSliders ();
+	}
+
+	bool starAnimation(int value, ref List<int> list, Slider sliderStatus,
+	                  Func<float, bool> animationMethod){
+		if(sliderStatus.maxValue == sliderStatus.value){
+			return false;
+		}
 		StarTextController instanceStarTextController = StarTextController.instance;
 		StarImageController starImageController = StarImageController.instance;
 		
 		int result = instanceStarTextController.changeStarText(value);
-		
+
 		if(result >= 0){
-			eugenioController.playEathing(3f);
+			animationMethod(3f);
 			starImageController.playStarImage();
-			User user = User.getInstance;
 			user.Stars_qty = result;
 
-			UpdateFood();
-		}else{
-//			eugenioController.playNegation(); // TODO
+			if(list.Count != 0){
+				updateStatus(value, ref list, sliderStatus);
+			}else{
+				updateStatus(value, sliderStatus);
+			}
+			return true;
 		}
+		return false;
 
-		return result;
 	}
 
-	void UpdateFood(){
-		// TODO David
+	public void foodClick(ManagerList managerList){
+		StartCoroutine
+			(
+				managerList.FoodsList (FoodBought)
+			);
+	}
+
+	int FoodBought(int value){
+
+		bool result = starAnimation (value, ref foodsPrices, foodSlider, eugenioController.playEathing);
+		if(!result){
+			Debug.Log("Play animation negating!");
+			//			eugenioController.playNegation(); // TODO
+			return -1;
+		}
+		return 1;
+
 	}
 
 	public void MedicineTaken(){
-		// TODO Logic Medicine
+		int value = Mathf.FloorToInt((user.Level_pet + 2) / 2); // TODO
+		List<int> nullList = new List<int>();
+
+		bool success = starAnimation(value, ref nullList, healthSlider, eugenioController.playTakingMedicine);
+		if(!success){
+			Debug.Log("Play animation negating!");
+			//			eugenioController.playNegation(); // TODO
+		}
+
+	}
+	
+	public void Bathed(){
+		Debug.Log (Mathf.FloorToInt((user.Level_pet + 1) / 2));
+		int value = Mathf.FloorToInt((user.Level_pet + 2) / 2); // TODO
+		List<int> nullList = new List<int>();
+
+		bool success = starAnimation (value, ref nullList, healthSlider, eugenioController.playBathing);
+		if(!success){
+			Debug.Log("Play animation negating!");
+			//			eugenioController.playNegation(); // TODO
+		}
+	}
+	
+	void updatePet(Pet pet){
+		user.CurrentPetStatus = pet;
 	}
 
-	public void Bathed(){
-		// TODO Logic after Bathing
+	void updateStatusSliders(){
+		Pet pet = user.CurrentPetStatus;
+		pet.Health = healthSlider.value;
+		pet.Entertainment = entSlider.value;
+		pet.Feed = foodSlider.value;
+
+		updatePet (pet);
 	}
 
 	public void updateStatusSliders (float qtyHealth, float qtyEnt, float qtyFood)
 	{
-		healthSlider.value = qtyHealth;
-		entSlider.value = qtyEnt;
-		foodSlider.value = qtyFood;
+		Pet pet = user.CurrentPetStatus;
+
+		if(healthSlider.value > pet.Health){
+			pet.Health = healthSlider.value;
+		}else{
+			pet.Health = qtyHealth;
+			healthSlider.value = qtyHealth;
+		}
+
+		if(entSlider.value > pet.Entertainment){
+			pet.Entertainment = entSlider.value;
+		}else{
+			pet.Entertainment = qtyEnt;
+			entSlider.value = qtyEnt;
+		}
+		if(foodSlider.value > pet.Feed){
+			pet.Feed = foodSlider.value;
+		}else{
+			pet.Entertainment = qtyEnt;
+			foodSlider.value = qtyFood;
+		}
+
+		updatePet (pet);
 	}
 
 	public void updateExperienceSlider(float expValue){
