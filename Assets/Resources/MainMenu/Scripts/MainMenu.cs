@@ -68,7 +68,8 @@ public class MainMenu : MonoBehaviour {
 
 		GameObject eugenioSceneGO = GameObject.FindGameObjectWithTag("EugenioSceneControl");
 		if(eugenioSceneGO != null){
-			Debug.Log("Eugenio em cena");
+			petStatus.Experience = user.CalculateExperience();
+
 			instance.eugenioSceneControl = eugenioSceneGO.GetComponent<EugenioSceneControl>();
 			instance.updateSliderValues();
 		}
@@ -84,10 +85,7 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	void Start(){
-		InvokeRepeating ("calcDecayRate", 30f, 30f);
-		InvokeRepeating ("applyDecay", 40f, 40f);
-		InvokeRepeating ("updateSliderValues", 60f, 60f);
-
+		InvokeRepeating ("calcDecayRate", 120f, 120f);
 	}
 
 	void FixedUpdate () {
@@ -110,7 +108,8 @@ public class MainMenu : MonoBehaviour {
 	
 	void updateSliderValues () {
 		if(instance.eugenioSceneControl != null){
-			petStatus = user.CurrentPetStatus;
+			user.CurrentPetStatus = petStatus;
+			Debug.Log("petStatus: " + petStatus.ToString());
 			instance.eugenioSceneControl.updateStatusSliders(petStatus.Health, petStatus.Entertainment, petStatus.Feed);
 			instance.eugenioSceneControl.updateExperienceSlider(user.CurrentPetStatus.Experience);
 		}
@@ -218,15 +217,15 @@ public class MainMenu : MonoBehaviour {
 
 
 	void calcDecayRate () {
-		// TODO Nao calcular se qtyFood for menor ou igual a 0.
-		// TODO Nao calcular se qtyEnt for menor ou igual a 0.
-		// TODO Nao calcular se qtyHealth for menor ou igual a 0.
 
 		createDecayList();
 		
 		calcFuzzyFicacao();
 		calcInference();
 		calcDefuzzyFicacao ();
+
+
+		applyDecay ();
 
 	}
 
@@ -266,21 +265,27 @@ public class MainMenu : MonoBehaviour {
 		if(!float.IsNaN(decayRate)){
 			petStatus = user.CurrentPetStatus;
 
-			qtyFood -= decayRate;
-			qtyEnt -= decayRate;
-			qtyHealth -= decayRate;
+			float feed = petStatus.Feed;
+			float entertainment = petStatus.Entertainment;
+			float health = petStatus.Health;
 
-			if(qtyFood >= 0)
-				petStatus.Feed = qtyFood;
-			if(qtyEnt >= 0)
-				petStatus.Entertainment = qtyEnt;
-			if(qtyHealth >= 0)
-				petStatus.Health = qtyHealth;
-			
-			user.CurrentPetStatus = petStatus;
+			feed -= decayRate;
+			entertainment -= decayRate;
+			health -= decayRate;
+
+			if(feed >= 0f){
+				petStatus.Feed = feed;
+			}
+			if(entertainment >= 0f){
+				petStatus.Entertainment = entertainment;
+			}
+			if(health >= 0f){
+				petStatus.Health = health;
+			}
+
+			updateSliderValues();
+
 		}
-
-		Debug.Log (user.CurrentPetStatus.ToString ());
 	}
 
 }

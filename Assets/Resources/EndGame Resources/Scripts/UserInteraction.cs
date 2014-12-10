@@ -29,8 +29,8 @@ public class UserInteraction : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		step = 1;
-		int level = 1;//currentUser.Level_pet;
-		total = level * defaultQntStage; 
+		int level = currentUser.Level_pet;
+		total = 10;
 		hitQty = 0;
 		failQty = 0;
 	
@@ -71,7 +71,7 @@ public class UserInteraction : MonoBehaviour {
 
 	bool increaseStep(int hitQ = 0){
 		// TODO REDO
-		if(step % total == 0 || step % total == 10 ){
+		if(step == 10){
 			Application.LoadLevel("EndTask");
 			return false;
 		}else{

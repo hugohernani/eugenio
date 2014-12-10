@@ -6,6 +6,8 @@ public class Game {
 	int id;
 	string name;
 	bool available;
+	int currentScore;
+	int currentRecord;
 
 	public int Id {
 		get {
@@ -34,11 +36,28 @@ public class Game {
 		}
 	}
 
-	public override string ToString ()
-	{
-		return string.Format ("[Game: Id={0}, Name={1}, Available={2}]", Id, Name, Available);
+	public int CurrentScore {
+		get {
+			return this.currentScore;
+		}
+		set {
+			currentScore = value;
+		}
 	}
 
+	public int CurrentRecord {
+		get {
+			return this.currentRecord;
+		}
+		set {
+			currentRecord = value;
+		}
+	}
+
+	public override string ToString ()
+	{
+		return string.Format ("[Game: Id={0}, Name={1}, Available={2}, CurrentScore={3}, CurrentRecord={4}]", Id, Name, Available, CurrentScore, CurrentRecord);
+	}
 
 
 }

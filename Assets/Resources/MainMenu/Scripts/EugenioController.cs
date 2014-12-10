@@ -13,6 +13,7 @@ public class EugenioController : MonoBehaviour {
 	public AudioClip bathingSound;
 	public AudioClip takingMedicineSound;
 	public AudioClip evolutionSound;
+	public AudioClip negationSound;
 
 	AudioSource audio;
 	User user = User.getInstance;
@@ -47,6 +48,12 @@ public class EugenioController : MonoBehaviour {
 	public void playEvolution (float time) {
 		callSound(evolutionSound);
 		StartCoroutine(playAnimation("bEvolution", time));
+	}
+
+	public void playNegation ()
+	{
+		callSound (negationSound);
+		animator.SetTrigger ("not");
 	}
 
 	public void callScene (string scene) {

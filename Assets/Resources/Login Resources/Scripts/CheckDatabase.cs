@@ -52,6 +52,7 @@ public class CheckDatabase : MonoBehaviour {
 				if(info != "finished"){
 				textLoading.text = info;
 			}else{
+				ApplicationQuit.connectionAvailable = true;
 				Application.LoadLevel("MainMenu");
 				Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
 

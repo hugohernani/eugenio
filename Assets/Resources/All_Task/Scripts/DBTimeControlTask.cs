@@ -6,8 +6,10 @@ public class DBTimeControlTask : MonoBehaviour {
 
 	float TIMESCENE;
 
-	void Awake(){
-		DontDestroyOnLoad (gameObject);
+	public static bool allowedToSave;
+
+	void Awake () {
+		DontDestroyOnLoad(gameObject);
 		TIMESCENE = 0.0f;
 	}
 
@@ -17,10 +19,15 @@ public class DBTimeControlTask : MonoBehaviour {
 	}
 
 	void OnDestroy(){
-		User user = User.getInstance;
-		
-		user.SaveTaskHits ();
-		
-		user.SaveTaskDateAdnDuration(TIMESCENE);
+		if(DBTimeControlTask.allowedToSave){
+				Debug.Log ("Destroying TASK_RUNNING.");
+				
+				User user = User.getInstance;
+				
+				user.SaveTaskHits ();
+				
+				user.SaveTaskDateAdnDuration(TIMESCENE);
+		}
+		allowedToSave = !allowedToSave;
 	}
 }

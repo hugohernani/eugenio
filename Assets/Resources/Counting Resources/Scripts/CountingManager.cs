@@ -65,7 +65,7 @@ public class CountingManager : MonoBehaviour {
 		if(qntThisTime > 0 && qntThisTime <= 10){
 			cellSize = new Vector2(120, 100);
 		}else if(qntThisTime >= 11 && qntThisTime <= 20){
-			cellSize = new Vector2(90,80);
+			cellSize = new Vector2(70,60);
 		}else if(qntThisTime >= 21 && qntThisTime <= 50){
 			cellSize = new Vector2(50,50);
 		}else if(qntThisTime >= 51 && qntThisTime <= 100){

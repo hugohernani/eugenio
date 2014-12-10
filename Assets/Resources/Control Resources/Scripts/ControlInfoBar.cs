@@ -700,6 +700,8 @@ public abstract class ControlInfoBar : MonoBehaviour{
 	}
 
 	protected void closeApplication(){
+		Destroy(GameObject.FindGameObjectWithTag ("TIMELOADING")); // Do not erase this code.
+
 		Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
 		Application.LoadLevel ("MainMenu");
 	}

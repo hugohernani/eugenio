@@ -124,10 +124,10 @@ public class DataAccess: MonoBehaviour{
 			setPetStatus ();
 			info("Pet carregado.");
 //			yield return new WaitForSeconds(1f);
-			getAvailableFoods (user.Level_pet);
+			getAvailableFoods ();
 			info("Comidas disponiveis carregadas.");
 //			yield return new WaitForSeconds(1f);
-			getAvailableGames (user.Level_pet);
+			getAvailableGames ();
 			info("Jogos disponiveis carregados.");
 //			yield return new WaitForSeconds(1f);
 			retrieveCategories ();
@@ -208,9 +208,9 @@ public class DataAccess: MonoBehaviour{
 		
 	}
 
-	public void getAvailableFoods(int level){
+	public void getAvailableFoods(){
 		string targetUri = serverUriPath + foodAccessUriPath;
-		targetUri += ("filter/" + level + "/");
+		targetUri += ("filter/" + user.Level_pet + "/");
 		
 		GET(targetUri);
 		string response = wwwResquest.text;
@@ -282,16 +282,16 @@ public class DataAccess: MonoBehaviour{
 			Debug.Log ("Pet updated in the server side");
 			return true;
 		} else {
-			saveLoad.SavePet(user.CurrentPetStatus);
+			saveLoad.SavePet(pet);
 			Debug.Log("A problem occured updating the server side. Saving Pet in file");
 			return false;
 		}
 	}
 
-	public void getAvailableGames(int level){
+	public void getAvailableGames(){
 		string targetUri = serverUriPath + GameAccessUriPath;
-		targetUri += ("all/" + level.ToString() + "/");
-		
+		targetUri += ("all/" + user.Id.ToString() + "/");
+
 		GET (targetUri);
 		string response = wwwResquest.text;
 		
@@ -301,17 +301,33 @@ public class DataAccess: MonoBehaviour{
 			
 			string[] gameInfos = response.Split(';');
 			foreach (string gameInfo in gameInfos) {
-				string[] values = gameInfo.Split('.');
+				string[] values = gameInfo.Split('*');
 				Game game = new Game();
 				game.Id = int.Parse(values[0]);
 				game.Name = values[1];
 				game.Available = bool.Parse(values[2]);
-				games.Add(game);
-				Debug.Log(game.ToString());
+
+				user.AddGameByVerification(game);
+
+				if(values[3] != "0"){ // User already played this game
+					string[] upValues = values[3].Split('|');
+					User.UserPlays up = new User.UserPlays();
+
+					up.Id = int.Parse(upValues[0]);
+					up.UserId = int.Parse(upValues[1]);
+					up.GameId = int.Parse(upValues[2]);
+					up.Score = int.Parse(upValues[5]);
+					up.Date_user_played = DateTime.ParseExact(upValues[4], "yyyy-MM-dd HH:mm:ss", null);
+					up.Record = int.Parse(upValues[5]);
+
+					user.AddUserPlayByVerification(up);
+
+					game.CurrentScore = up.Score;
+					game.CurrentRecord = up.Record;
+
+				}
 			}
 		}
-		
-		user.Games = games;
 	}
 	
 	void retrieveCategories(){
@@ -408,7 +424,7 @@ public class DataAccess: MonoBehaviour{
 				task.SubCategoryId = 0;
 
 			if(values[5] != "0"){
-				task.Available = (nextTaskAvailable = true);
+				task.Available = true;
 
 				string[] udValues = values[5].Split('|');
 				User.UserDoes ud = new User.UserDoes();
@@ -420,6 +436,10 @@ public class DataAccess: MonoBehaviour{
 				ud.Duration = float.Parse(udValues[5]);
 				ud.Date_user_did = DateTime.ParseExact(udValues[6], "yyyy-MM-dd HH:mm:ss", null);
 				ud.Tentativa = int.Parse(udValues[7]);
+
+				if(ud.Stars < 10){
+					nextTaskAvailable = false;
+				}
 
 				user.AddUserDoesByVerification(ud);
 			}else{
@@ -477,6 +497,84 @@ public class DataAccess: MonoBehaviour{
 		user.UserDoesList = tempListUserDoes;
 		user.CachedUserDoesList = tempListUserDoes;
 		
+	}
+
+	bool createUpdateUserPlays (List<User.UserPlays> userPlaysLoadedList)
+	{
+		string targetUri = serverUriPath + userAccessUriPath;
+		targetUri += ("saveScores/");
+		
+		int qntSavedInDB = 0;
+		bool success = false;
+		foreach (User.UserPlays up in userPlaysLoadedList) {
+			Dictionary<string, string> userPlaysDict = new Dictionary<string, string> ();
+			
+			userPlaysDict.Add("user", up.UserId.ToString());
+			userPlaysDict.Add("game", up.GameId.ToString());
+			userPlaysDict.Add("score", up.Score.ToString());
+
+			bool result = POSTConfirmation(targetUri, userPlaysDict);
+			
+			if(result){
+				qntSavedInDB++;
+				Debug.Log("UserPlays tuple created/updated in database");
+			} else {
+				saveLoad.AddUserPlays(up);
+				Debug.Log("UserPlays saved in file");
+			}
+		}
+		
+		if(qntSavedInDB != 0 && qntSavedInDB == userPlaysLoadedList.Count){
+			success = true;
+		}
+		
+		if(saveLoad != null)
+			saveLoad.SaveUserDoes ();
+		
+		return success;
+	}
+
+	bool createUpdateUserPlays ()
+	{
+		string targetUri = serverUriPath + userAccessUriPath;
+		targetUri += ("saveScores/");
+
+		List<User.UserPlays> itemsToRemoveFromList = new List<User.UserPlays> ();
+
+		int qntSavedInDB = 0;
+		bool success = false;
+		foreach (User.UserPlays up in user.CachedUserPlaysList) {
+			Dictionary<string, string> userPlaysDict = new Dictionary<string, string> ();
+			
+			userPlaysDict.Add("user", up.UserId.ToString());
+			userPlaysDict.Add("game", up.GameId.ToString());
+			userPlaysDict.Add("score", up.Score.ToString());
+			
+			bool result = POSTConfirmation(targetUri, userPlaysDict);
+			
+			if(result){
+				qntSavedInDB++;
+				Debug.Log("UserPlays tuple created/updated in database");
+			} else {
+				saveLoad.AddUserPlays(up);
+				Debug.Log("UserPlays saved in file");
+			}
+			itemsToRemoveFromList.Add(up);
+		}
+		
+		if(qntSavedInDB != 0 && qntSavedInDB == user.CachedUserPlaysList.Count){
+			success = true;
+		}
+		
+		if(saveLoad != null){
+			saveLoad.SaveUserPlays ();
+		}
+		
+		foreach (User.UserPlays up in itemsToRemoveFromList) {
+			user.RemoveUserPlayFromCachedList(up);
+		}
+		
+		return success;
 	}
 
 	// this is dealt a litle different from the overload method because doesn't need remove from userDoesList their items.
@@ -633,6 +731,12 @@ public class DataAccess: MonoBehaviour{
 		}
 	}
 
+	void updateUserPlaysFromFile(SaveLoad saveLoadInstance){
+		List<User.UserPlays> userPlaysLoadedList = saveLoadInstance.LoadUserPlaysList ();
+		if(userPlaysLoadedList != null)
+			createUpdateUserPlays(userPlaysLoadedList);
+	}
+
 	void updateUserDoesFromFile(SaveLoad saveLoadInstance){
 		List<User.UserDoes> userDoesLoadedList = saveLoadInstance.LoadUserDoesList ();
 		if(userDoesLoadedList != null)
@@ -656,14 +760,19 @@ public class DataAccess: MonoBehaviour{
 			if(createUpdateUserDoes()){
 				qntSuccess++;
 			}
+
+			if(createUpdateUserPlays()){
+				qntSuccess++;
+			}
 			
-			if(qntSuccess != 3){
+			if(qntSuccess != 4){
 				updateInfoInDatabaseFromFile(saveLoad);
 			}else{
 				Debug.Log("All information saved");
 			}
 		}else{
-			// TODO something.
+			// TODO something else.
+			Debug.Log("User is not logged.");
 		}
 	}
 	

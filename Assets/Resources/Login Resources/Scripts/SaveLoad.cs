@@ -10,10 +10,12 @@ using System.IO;
 public class SaveLoad {
 
 	List<User.UserDoes> userDoesList;
+	List<User.UserPlays> userPlaysList;
 	static string userPath;
 
 	public SaveLoad (string userName) {
 		userDoesList = new List<User.UserDoes> ();
+		userPlaysList = new List<User.UserPlays> ();
 		SaveLoad.userPath = Application.persistentDataPath + "/" + userName;
 
 		if(!Directory.Exists(userPath)){
@@ -47,6 +49,10 @@ public class SaveLoad {
 		userDoesList.Add(ud);
 	}
 
+	public void AddUserPlays(User.UserPlays up){
+		userPlaysList.Add (up);
+	}
+
 	public bool SaveUserDoes () {
 		string path = userPath + "/savedUserDoesList.gd";
 		if(userDoesList.Count != 0){
@@ -58,14 +64,39 @@ public class SaveLoad {
 		return File.Exists(path);
 	}
 
+	public bool SaveUserPlays ()
+	{
+		string path = userPath + "/savedUserPlaysList.gd";
+		if(userPlaysList.Count != 0){
+			FileStream file = File.Create(path);
+			BinaryFormatter bf = new BinaryFormatter();
+			bf.Serialize(file, userPlaysList);
+			file.Close();
+		}
+		return File.Exists (path);
+	}
+
 	public List<User.UserDoes> LoadUserDoesList () {
-		if(File.Exists(userPath + "/savedUserDoesList.gd")) { 
-			string path = userPath + "/savedUserDoesList.gd";
+		string path = userPath + "/savedUserDoesList.gd";
+		if(File.Exists(path)) { 
 			FileStream file = File.Open(path, FileMode.Open);
 			BinaryFormatter bf = new BinaryFormatter();
 			userDoesList = (List<User.UserDoes>)bf.Deserialize(file);
 			file.Close();
 			return userDoesList;
+		} else 
+			return null;
+	}
+
+	public List<User.UserPlays> LoadUserPlaysList ()
+	{
+		string path = userPath + "/savedUserPlaysList.gd";
+		if(File.Exists(path)) { 
+			FileStream file = File.Open(path, FileMode.Open);
+			BinaryFormatter bf = new BinaryFormatter();
+			userPlaysList = (List<User.UserPlays>)bf.Deserialize(file);
+			file.Close();
+			return userPlaysList;
 		} else 
 			return null;
 	}

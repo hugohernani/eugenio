@@ -27,8 +27,8 @@ public class MessagePointReceiver : MonoBehaviour {
 
 	string[] messagesFormat =
 	{
-		"Parabens! \n Voce acertou {0} desta e ganhou +{1} estrelas!",
-		"Voce perdeu. \n Vamos tentar outra vez?"
+		"Parabens! \n Voce acertou {0} desta vez e ganhou +{1} estrelas!",
+		"Voce acertou {0} de 10 tentativas. \n Voce ainda nao conseguiu \n10 estrelas nesta tarefa. \n Vamos tentar outra vez?"
 	};
 
 	/*
@@ -36,9 +36,6 @@ public class MessagePointReceiver : MonoBehaviour {
 	 * Get UsetInstance.
 	 */
 	void Awake(){
-		GameObject taskRunningGO = GameObject.FindGameObjectWithTag ("TIMELOADING"); // Do not erase this code.
-		Destroy (taskRunningGO);
-
 		pointValue = GameObject.Find("Value").GetComponent<Text> ();
 		messageEnd = GameObject.Find ("MessageText").GetComponent<Text> ();
 		buttonPlayText = GameObject.Find ("Text").GetComponent<Text> ();
@@ -55,27 +52,37 @@ public class MessagePointReceiver : MonoBehaviour {
 	 */
 	void Start () {
 
+		if(user.Level_pet < ((MainCategory) user.CurrentCategory).Level){
+			GoMainScene();
+		}
+
 		value = user.TaskPoints;
 
 		if(user.StarsStage < value){
 			user.StarsStage = value;
 		}
 
+		GameObject taskRunningGO = GameObject.FindGameObjectWithTag ("TIMELOADING"); // Do not erase this code.
+		DBTimeControlTask.allowedToSave = true;
+		Destroy (taskRunningGO);
+
 		int userStars = user.StarsStage;
+		if(!user.HasPlayed)
+			user.Stars_qty += userStars;
 
-		user.Stars_qty += userStars;
+		int diffOtherAtempt = userStars - value;
 
-		int diffOtherAtempt = Math.Abs(userStars - value);
-
-		if(userStars >= 7){
-			messageEnd.text = string.Format(messagesFormat[0], value, diffOtherAtempt);
-			buttonPlayText.text = "JOGAR\nMAIS";
-			eugenioImage.sprite = eugenioFeliz;
+		if(value >= 7){
+			if(diffOtherAtempt > 0){
+				messageEnd.text = string.Format(messagesFormat[0], value, 0);
+			}else{
+				messageEnd.text = string.Format(messagesFormat[0], value, diffOtherAtempt);
+				buttonPlayText.text = "JOGAR\nMAIS";
+				eugenioImage.sprite = eugenioFeliz;
+			}
 
 			if(userStars == 10){
 				messageEnd.text = string.Format(messagesFormat[0], value, 0); // He doesn't gain anything else if he already achieve the maximum value.
-
-				estrelaImage.sprite = estrelaOuro;
 
 				// Change this to use State Pattern
 
@@ -105,27 +112,25 @@ public class MessagePointReceiver : MonoBehaviour {
 						buttonPlayText.text = "PROXIMO fase!";
 						user.CurrentStage++;
 						user.releaseNextCategory();
-
-						if(user.Level_pet < ((MainCategory) user.CurrentCategory).Level){
-							GoMainScene();
-						}
-
 					}
 				}
-			}else{
-				estrelaImage.sprite = estrelaPrata;
 			}
 
 		}else{
 			eugenioImage.sprite = eugenioTriste;
-			messageEnd.text = messagesFormat[1];
+			messageEnd.text = string.Format(messagesFormat[1], value);
 			buttonPlayText.text = "JOGAR\nOUTRA VEZ";
-
-			estrelaImage.sprite = estrelaBronze;
-
 		}
 
-		pointValue.text = user.StarsStage.ToString();
+		pointValue.text = userStars.ToString();
+
+		if(userStars == 10){
+			estrelaImage.sprite = estrelaOuro;
+		}else if(userStars >= 7){
+			estrelaImage.sprite = estrelaPrata;
+		}else{
+			estrelaImage.sprite = estrelaBronze;
+		}
 
 	}
 

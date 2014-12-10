@@ -69,8 +69,14 @@ public class ListGames : ListAbstract {
 	}
 	
 	void callScene(GameItem item){
+
+		user.CurrentGame = user.getGame (item.Name);
+
+		user.startSavingGame ();
+
+		Debug.Log (user.CurrentGame.ToString ());
 		
-		Application.LoadLevel(item.Name);
+		Application.LoadLevel(user.CurrentGame.Name);
 		
 	}
 
