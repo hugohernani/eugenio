@@ -27,11 +27,11 @@ public class User {
 	List<Task> tasks;
 
 	List<UserDoes> userDoesList;
-	List<UserDoes> cachedUserDoesList;
-	UserDoes tempUserDoes;
+	Queue<UserDoes> cachedUserDoesQueue;
+//	UserDoes tempUserDoes;
 
 	List<UserPlays> userPlaysList;
-	List<UserPlays> cachedUserPlaysList;
+	Queue<UserPlays> cachedUserPlaysQueue;
 	UserPlays tempUserPlays;
 
 	int taskPoints; // acertos por fase
@@ -41,6 +41,7 @@ public class User {
 	int stage = 1;
 	int subStage = 1;
 
+	int tempTaskId;
 	Task currentTask;
 	Category currentCategory;
 	Category currentSubCategory;
@@ -59,10 +60,10 @@ public class User {
 		tasks = new List<Task> ();
 		games = new List<Game> ();
 		userDoesList = new List<UserDoes> ();
-		cachedUserDoesList = new List<UserDoes> ();
+		cachedUserDoesQueue = new Queue<UserDoes>();
 		userPlaysList = new List<UserPlays> ();
-		cachedUserPlaysList = new List<UserPlays> ();
-		tempUserDoes = new UserDoes ();
+		cachedUserPlaysQueue = new Queue<UserPlays> ();
+//		tempUserDoes = new UserDoes ();
 		tempUserPlays = new UserPlays ();
 	}
 	
@@ -126,7 +127,6 @@ public class User {
 	public Task getTask(int mainCategoryId, int subCategoryId){
 		foreach(Task task in tasks){
 			if(task.CategoryId == mainCategoryId && task.SubCategoryId == subCategoryId){
-				Debug.Log("T: " + task.ToString());
 				return task;
 			}
 		}
@@ -183,6 +183,8 @@ public class User {
 
 	public void releaseNextCategory ()
 	{
+		Debug.Log ("Last task before advancing to the next Category: " + this.currentTask.Name);
+		this.CurrentStage++;
 		int lastCategoryPosition = categories.LastIndexOf(currentCategory);
 		currentCategory = categories.ElementAt(lastCategoryPosition+1);
 		currentCategory.Available = true; // make the category available
@@ -212,19 +214,19 @@ public class User {
 		return false;
 	}
 
-	bool setUserDoesFromCurrentList ()
-	{
-		foreach (UserDoes ud in userDoesList) {
-			if(ud.TaskId == currentTask.Id && ud.UserId == this.id){
-				Debug.Log("Existed userDoes: " + ud.ToString());
-				this.starsStage = ud.Stars;
-				tempUserDoes = ud;
-				return true;
-			}
-		}
-		this.starsStage = 0;
-		return false;
-	}
+//	bool setUserDoesFromCurrentList ()
+//	{
+//		foreach (UserDoes ud in userDoesList) {
+//			if(ud.TaskId == currentTask.Id && ud.UserId == this.id){
+//				this.stars_qty = ud.Stars;
+//				tempUserDoes = ud;
+//				Debug.Log("Existed userDoes: " + tempUserDoes.ToString());
+//				return true;
+//			}
+//		}
+//		this.stars_qty = 0;
+//		return false;
+//	}
 
 	public void startSavingGame(){
 		tempUserPlays.UserId = this.id;
@@ -257,48 +259,50 @@ public class User {
 		}else{ // add
 			Debug.Log("Adding UserPlays");
 			userPlaysList.Add(userPlays);
-			cachedUserPlaysList.Add(userPlays);
+			cachedUserPlaysQueue.Enqueue(userPlays);
 		}
 
-	}
-
-	public void StartSavingTask(){
-		tempUserDoes.UserId = this.id;
-		tempUserDoes.TaskId = currentTask.Id;
-		if(userDoesList.Count != 0){
-			hasPlayed = setUserDoesFromCurrentList();
-		}
+		this.tempUserPlays = new UserPlays ();
 
 	}
 
-	public void SaveTaskHits(){
-		tempUserDoes.Hits = this.taskPoints;
-	}
-
-	public void SaveTaskDateAdnDuration(float duration){
-		tempUserDoes.Duration = duration;
-		tempUserDoes.Date_user_did = DateTime.Now;
-
-		tempUserDoes.Stars = this.starsStage;
-		
-		UserDoes userDoes = tempUserDoes; // separate in memory.
-		int savedPosition = -1;
-		for(int i = 0; i < userDoesList.Count; i++){
-			User.UserDoes tempUd = userDoesList[i];
-			if (userDoes.TaskId == tempUd.TaskId && userDoes.UserId == tempUd.UserId
-			    && userDoes.Stars < tempUd.Stars){
-				savedPosition = i;
+	public bool StartSavingTask(){
+		// setting starStage
+		this.tempTaskId = currentTask.Id;
+		int tempHit = 0;
+		foreach (UserDoes ud in userDoesList) {
+			if(ud.TaskId == currentTask.Id && ud.UserId == this.id){
+				if(tempHit < ud.Hits){
+					tempHit = ud.Hits;
+				}
 			}
 		}
+		this.starsStage = tempHit;
+		if(tempHit != 0) return true;
+		return false;
+	}
 
-		if(savedPosition != -1){ // replace
-			Debug.Log("Replacing existed userTask");
-			userDoesList[savedPosition] = userDoes;
-		}else{ // add
-			Debug.Log("Adding UserTask");
-			userDoesList.Add(userDoes);
-			cachedUserDoesList.Add(userDoes);
-		}
+//	public void SaveTaskHits(){
+//		tempUserDoes.Hits = this.taskPoints;
+//	}
+
+	public void SaveTaskDateAndDuration(float duration){
+		UserDoes userDoes = new UserDoes ();
+
+		userDoes.UserId = this.Id;
+		userDoes.TaskId = this.tempTaskId;
+		userDoes.Hits = this.taskPoints;
+		userDoes.Duration = duration;
+		userDoes.Date_user_did = DateTime.Now;
+
+		Debug.Log("Adding UserTask: " + userDoes.ToString());
+		userDoesList.Add(userDoes);
+		cachedUserDoesQueue.Enqueue(userDoes);
+//		}
+
+		this.starsStage = 0;
+		this.taskPoints = 0;
+//		this.hasPlayed = false;
 
 	}
 
@@ -311,12 +315,12 @@ public class User {
 		}
 	}
 
-	public List<UserPlays> CachedUserPlaysList {
+	public Queue<UserPlays> CachedUserPlaysQueue {
 		get {
-			return this.cachedUserPlaysList;
+			return this.cachedUserPlaysQueue;
 		}
 		set {
-			cachedUserPlaysList = value;
+			cachedUserPlaysQueue = value;
 		}
 	}
 
@@ -329,12 +333,12 @@ public class User {
 		}
 	}
 
-	public List<UserDoes> CachedUserDoesList {
+	public Queue<UserDoes> CachedUserDoesQueue {
 		get {
-			return this.cachedUserDoesList;
+			return this.cachedUserDoesQueue;
 		}
 		set {
-			cachedUserDoesList = value;
+			cachedUserDoesQueue = value;
 		}
 	}
 
@@ -365,15 +369,12 @@ public class User {
 		int level = this.level_pet + 1; // to deal with level 0.
 		float porcentage = indice_from_1 / level;
 		float value_increase = referencial_value * porcentage/100f;
-		this.currentPetStatus.Entertainment += value_increase;
-	}
+		float petEntResult = this.currentPetStatus.Entertainment + value_increase;
 
-	public bool RemoveUserTaskFromCachedList(UserDoes taskRelation){
-		return this.cachedUserDoesList.Remove (taskRelation);
-	}
-
-	public bool RemoveUserPlayFromCachedList(UserPlays up){
-		return this.cachedUserPlaysList.Remove (up);
+		if (petEntResult > 1f)
+			this.currentPetStatus.Entertainment = 1f;
+		else
+			this.currentPetStatus.Entertainment = petEntResult;
 	}
 
 	public void AddGameByVerification(Game game){
@@ -579,23 +580,20 @@ public class User {
 
 	public bool HasPlayed {
 		get {
-			bool returned = this.hasPlayed;
-			this.hasPlayed = false;
-			Debug.Log("Has Played: " + hasPlayed);
+			bool returned = !this.hasPlayed;
+			this.hasPlayed = true;
 			return returned;
 		}
 	}
 
 	[Serializable]
-	public class UserDoes{
+	public class UserDoes: ICloneable{
 		int id;
 		int userId;
 		int taskId;
 		int hits;
-		int stars;
 		float duration;
 		DateTime date_user_did;
-		int tentativa;
 
 		public UserDoes ()
 		{
@@ -655,35 +653,20 @@ public class User {
 			}
 		}
 
-		public int Tentativa {
-			get {
-				return this.tentativa;
-			}
-			set {
-				tentativa = value;
-			}
+		public object Clone ()
+		{
+			return this.MemberwiseClone ();
 		}
-
-		public int Stars {
-			get {
-				return this.stars;
-			}
-			set {
-				stars = value;
-			}
-		}
-
-
 
 		public override string ToString ()
 		{
-			return string.Format ("[UserDoes: UserId={0}, TaskId={1}, Hits={2}, Stars={3}, Date_user_did={4}, Duration={5}, Tentativa={6}]", UserId, TaskId, Hits, Stars, Date_user_did.ToShortDateString(), Duration.ToString(), Tentativa);
+			return string.Format ("[UserDoes: UserId={0}, TaskId={1}, Hits={2}, Date_user_did={3}, Duration={4}]", UserId, TaskId, Hits, Date_user_did.ToShortDateString(), Duration.ToString());
 		}
 
 	}
 
 	[Serializable]
-	public class UserPlays{
+	public class UserPlays: ICloneable{
 		int id;
 		int userId;
 		int gameId;
@@ -743,6 +726,11 @@ public class User {
 			set {
 				date_user_played = value;
 			}
+		}
+
+		public object Clone ()
+		{
+			return this.MemberwiseClone ();
 		}
 
 		public override string ToString ()

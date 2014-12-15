@@ -28,7 +28,8 @@ public class MessagePointReceiver : MonoBehaviour {
 	string[] messagesFormat =
 	{
 		"Parabens! \n Voce acertou {0} desta vez e ganhou +{1} estrelas!",
-		"Voce acertou {0} de 10 tentativas. \n Voce ainda nao conseguiu \n10 estrelas nesta tarefa. \n Vamos tentar outra vez?"
+		"Voce acertou {0} de 10 tentativas. \n Voce ainda nao conseguiu \n10 estrelas nesta tarefa. \n Vamos tentar outra vez?",
+		"Voce acertou {0} desta vez.\nVoce ja ganhou todas as estrelas dest{1} {2}\n. Vamos para {3} proxim{3}?"
 	};
 
 	/*
@@ -48,70 +49,60 @@ public class MessagePointReceiver : MonoBehaviour {
 	 * @desc Callback function called after Awake.
 	 * Get ther user taskPoints. If he succeded the task
 	 * increase his stage in one more
-	 * 
 	 */
 	void Start () {
-
 		if(user.Level_pet < ((MainCategory) user.CurrentCategory).Level){
 			GoMainScene();
 		}
 
 		value = user.TaskPoints;
 
-		if(user.StarsStage < value){
-			user.StarsStage = value;
-		}
-
 		GameObject taskRunningGO = GameObject.FindGameObjectWithTag ("TIMELOADING"); // Do not erase this code.
 		DBTimeControlTask.allowedToSave = true;
 		Destroy (taskRunningGO);
 
-		int userStars = user.StarsStage;
-		if(!user.HasPlayed)
-			user.Stars_qty += userStars;
+		int diffOtherAtempt = Math.Abs(user.StarsStage - value);
 
-		int diffOtherAtempt = userStars - value;
+		if(user.StarsStage < value){
+			user.StarsStage = value;
+		}
 
 		if(value >= 7){
-			if(diffOtherAtempt > 0){
-				messageEnd.text = string.Format(messagesFormat[0], value, 0);
-			}else{
+				user.Stars_qty += diffOtherAtempt;
 				messageEnd.text = string.Format(messagesFormat[0], value, diffOtherAtempt);
 				buttonPlayText.text = "JOGAR\nMAIS";
 				eugenioImage.sprite = eugenioFeliz;
-			}
 
-			if(userStars == 10){
-				messageEnd.text = string.Format(messagesFormat[0], value, 0); // He doesn't gain anything else if he already achieve the maximum value.
-
+			if(user.StarsStage == 10){
 				// Change this to use State Pattern
-
-				if(user.CurrentTask.Name == "Adicao"){
+				if(((MainCategory) user.CurrentCategory).Name == "Operacoes"){
 					if(user.CurrentSubStage < 3){
-						messageEnd.text = "Parabens! \n voce ja ganhou todas as estrelas desta subfase!\n" +
-							"Vamos para a proxima?";
+						messageEnd.text = string.Format(messagesFormat[2], value, "a", "subfase", "a");
 						buttonPlayText.text = "PROXIMA subfase!";
 						user.releaseNextSubCategory();
 					}else{
-						messageEnd.text = "Parabens! \n voce ja ganhou todas as estrelas desta fase!\n" +
-							"Vamos para a proxima?";
+						messageEnd.text = string.Format(messagesFormat[2], value, "a", "fase", "a");
 						buttonPlayText.text = "PROXIMA FASE!";
-						user.CurrentStage++;
 						user.releaseNextCategory();
+						if(user.Level_pet < ((MainCategory) user.CurrentCategory).Level){
+							GoMainScene();
+						}
 					}
 
 				}else{
 					if(user.CurrentTask.Name != "Medir"){
-						messageEnd.text = "Parabens! \n voce ja ganhou todas as estrelas deste jogo!\n" +
-							"Vamos para o proximo?";
+						messageEnd.text = string.Format(messagesFormat[2], value, "e", "jogo", "o");
 						buttonPlayText.text = "PROXIMO JOGO!";
 						user.releaseNextTask();
 					}else{
+						messageEnd.text = string.Format(messagesFormat[2], value, "a", "fase", "a");
 						messageEnd.text = "Parabens! \n voce ja ganhou todas as estrelas desta fase!\n" +
 							"Vamos para a proxima?";
-						buttonPlayText.text = "PROXIMO fase!";
-						user.CurrentStage++;
+						buttonPlayText.text = "PROXIMA FASE!";
 						user.releaseNextCategory();
+						if(user.Level_pet < ((MainCategory) user.CurrentCategory).Level){
+							GoMainScene();
+						}
 					}
 				}
 			}
@@ -122,22 +113,26 @@ public class MessagePointReceiver : MonoBehaviour {
 			buttonPlayText.text = "JOGAR\nOUTRA VEZ";
 		}
 
-		pointValue.text = userStars.ToString();
+		pointValue.text = user.StarsStage.ToString();
 
-		if(userStars == 10){
+		if(user.StarsStage == 10){
 			estrelaImage.sprite = estrelaOuro;
-		}else if(userStars >= 7){
+		}else if(user.StarsStage >= 7){
 			estrelaImage.sprite = estrelaPrata;
 		}else{
 			estrelaImage.sprite = estrelaBronze;
 		}
+	}
 
+	void destroySelfScene(){
+		Destroy (GameObject.FindGameObjectWithTag ("MAIN_SCENE_OBJECT"), 2f);
 	}
 
 	/*
 	 * @desc Call the scene according to the CurrentTask.Name
 	 */
 	public void GoBackScene(){
+		destroySelfScene ();
 		Application.LoadLevel (user.CurrentTask.Name);
 		user.StartSavingTask ();
 
@@ -149,6 +144,7 @@ public class MessagePointReceiver : MonoBehaviour {
 	 * @desc Call the MainScene
 	 */
 	public void GoMainScene(){
+		destroySelfScene ();
 		Application.LoadLevel ("MainMenu");
 	}
 

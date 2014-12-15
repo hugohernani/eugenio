@@ -6,9 +6,9 @@ public class RestartApp : MonoBehaviour {
 	private GameScore gameScore = GameScore.getInstance;
 
 	//EXIT BUTTON
-	public void RestartApplication() {
-		gameScore.resetAll();
-		Application.LoadLevel(Application.loadedLevel);
+	public void Close() {
+		Application.LoadLevel("MainMenu");
+		Destroy(GameObject.FindGameObjectWithTag("MainObject"));
 	}
 
 	//RESET BUTTON
@@ -16,6 +16,7 @@ public class RestartApp : MonoBehaviour {
 		gameScore.resetAll();
 		gameScore.increaseAttempts();
 		gameScore.changeStatusButton();
+		Destroy(GameObject.FindGameObjectWithTag("MainObject"));
 		Application.LoadLevel(Application.loadedLevel);
 	}
 }

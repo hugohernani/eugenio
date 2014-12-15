@@ -65,7 +65,7 @@ public class ListFood : ListAbstract {
 			starIcon.GetComponentInChildren<Text>().text = itemFood.Value.ToString();
 			newItem.GetComponent<Button>().onClick.AddListener(clickAction);
 			
-			newItem.parent = container.transform;
+			newItem.SetParent(container.transform);
 			
 			newItem.offsetMax = Vector2.zero;
 			newItem.offsetMin = Vector2.zero;
@@ -97,7 +97,7 @@ public class ListFood : ListAbstract {
 		containerFood.FindChild("ConfirmButton").GetComponent<Button>().onClick.AddListener(clickConfirm);
 		containerFood.FindChild("CancelButton").GetComponent<Button>().onClick.AddListener(clickCancel);
 
-		containerFood.parent = mainContainer.transform;
+		containerFood.SetParent(mainContainer.transform);
 		containerFood.offsetMin = Vector2.zero;
 		containerFood.offsetMax = Vector2.zero;
 

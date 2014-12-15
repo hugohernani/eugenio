@@ -69,6 +69,11 @@ public class AudioManager : MonoBehaviour {
 		}
 	}
 
+	public void playOneClip (AudioClip sound)
+	{
+		audioSource.PlayOneShot (sound);
+	}
+
 	public void MuteControl(){
 		bool state = audioSource.mute;
 		audioSource.mute = !state;

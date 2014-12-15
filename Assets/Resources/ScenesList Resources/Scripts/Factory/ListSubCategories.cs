@@ -56,10 +56,20 @@ public class ListSubCategories : ListAbstract {
 	void callScene(ItemCategory item){
 		User user = User.getInstance;
 
+		user.CurrentSubCategory = user.getSubCategory (item.CategoryId);
 		user.CurrentTask = user.getTask(user.CurrentCategory.Id, user.CurrentSubCategory.Id);
+
+		user.StartSavingTask();
 		
-		Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
 		Application.LoadLevel ("Operacoes");
+		
+		GameObject persistenceTask = Resources.Load<GameObject> ("All_Task/prefab/TASK_RUNNING");
+		
+		Instantiate (persistenceTask);
+
+		DBTimeControlTask.allowedToSave = false;
+
+		Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
 
 	}
 	

@@ -25,5 +25,6 @@ public class DisplayNumberUser : MonoBehaviour {
 
 	public void stopDisplay(){
 		anim.SetBool ("DisplayNumber", false);
+		text.text = "";
 	}
 }

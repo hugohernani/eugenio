@@ -20,6 +20,12 @@ public class RestartButton : MonoBehaviour {
 	}
 
 	void restartScene(){
+		DBTimeControlTask.allowedToSave = false;
+		Destroy (GameObject.FindGameObjectWithTag ("TIMELOADING"));
+		Destroy (GameObject.FindGameObjectWithTag("TaskMainObject"));
+
+		User user = User.getInstance;
+		user.StartSavingTask ();
 		Application.LoadLevel (Application.loadedLevel);
 	}
 }

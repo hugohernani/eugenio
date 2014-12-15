@@ -56,7 +56,7 @@ public class ListTaskCategories : ListAbstract {
 				newItem.GetComponent<Button>().onClick.AddListener(actionRepobulate);
 			}
 
-			newItem.parent = container.transform;
+			newItem.SetParent(container.transform);
 			
 			newItem.offsetMax = Vector2.zero;
 			newItem.offsetMin = Vector2.zero;
@@ -93,7 +93,7 @@ public class ListTaskCategories : ListAbstract {
 					nameItem,
 					task.Available,
 					null,
-					item.CategoryId);
+					category.Id);
 
 				items.Add(ItemCategory);
 

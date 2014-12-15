@@ -78,12 +78,22 @@ public class GameController : MonoBehaviour {
 			else if(timeLeft <= e)
 				yield return new WaitForSeconds(Random.Range(0.25f, 0.5f));
 		}
+		Score score = GameObject.Find("Hat").GetComponent<Score>();
+		User user = User.getInstance;
+
+		user.CurrentGame.CurrentScore = score.ScoreValue;
+		user.saveScore ();
+		user.UpdateEntertainment ();
+
 		//When the time is over
 		yield return new WaitForSeconds(2.0f);
 		gameOverText.SetActive(true);
 		yield return new WaitForSeconds(2.0f);
 		restartButton.SetActive(true);
 		hatController.ToggleControl(false);
+
+
+
 	}
 
 	void setCounter() {

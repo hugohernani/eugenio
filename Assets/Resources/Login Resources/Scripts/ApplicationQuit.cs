@@ -19,11 +19,11 @@ public class ApplicationQuit : MonoBehaviour {
 	}
 
 	void saveData(){
-		Debug.Log ("Called saveData");
 		dataAccess.trySaveUserInformationsOnDB ();
 	}
 
 	void OnApplicationQuit(){
+		User.getInstance.Logged_time = Time.timeSinceLevelLoad;
 		CancelInvoke ("saveData");
 		if(ApplicationQuit.connectionAvailable)
 			dataAccess.trySaveUserInformationsOnDB ();

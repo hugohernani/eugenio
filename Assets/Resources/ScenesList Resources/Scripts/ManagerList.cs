@@ -9,8 +9,6 @@ public class ManagerList : MonoBehaviour {
 
 	ListFactory factory;
 
-	bool error = false;
-
 	Vector2 minLimit;
 	Vector2 maxLimit;
 

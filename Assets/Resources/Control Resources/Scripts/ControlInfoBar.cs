@@ -669,7 +669,6 @@ public abstract class ControlInfoBar : MonoBehaviour{
 //		anim.SetTrigger ("Yes");
 		qtyHit++;
 		currentUser.TaskPoints = qtyHit;
-		currentUser.SaveTaskHits();
 		return qtyHit;
 	}
 

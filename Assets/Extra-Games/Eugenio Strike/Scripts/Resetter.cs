@@ -48,10 +48,16 @@ public class Resetter : MonoBehaviour {
 			Application.LoadLevel(Application.loadedLevel);
 		} else {
 			isPlaying = false;
-			finalScore.GetComponent<Text>().text = gameScore.getScore().ToString()+" pontos";
+			int score = gameScore.getScore();
+			finalScore.GetComponent<Text>().text = score+" pontos";
 			finalScore.SetActive(true);
 			restartButton.SetActive(true);
 			exitButton.SetActive(true);
+
+			User user = User.getInstance;
+			user.CurrentGame.CurrentScore = score;
+			user.saveScore();
+			user.UpdateEntertainment();
 		}
 	}
 

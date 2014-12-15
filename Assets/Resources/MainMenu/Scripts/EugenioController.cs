@@ -79,7 +79,7 @@ public class EugenioController : MonoBehaviour {
 
 	void evolution(){
 		callSound (evolutionSound);
-		animator.SetInteger ("evolution", level);
+		animator.SetInteger ("evolution", user.Level_pet+1);
 	}
 
 	public int Level {

@@ -42,9 +42,7 @@ public class MainMenu : MonoBehaviour {
 	User user;
 
 	EugenioSceneControl eugenioSceneControl;
-
 	public static MainMenu instance;
-
 	GameObject helpCanvasGO;
 
 	void Awake () {
@@ -219,11 +217,10 @@ public class MainMenu : MonoBehaviour {
 	void calcDecayRate () {
 
 		createDecayList();
-		
+
 		calcFuzzyFicacao();
 		calcInference();
 		calcDefuzzyFicacao ();
-
 
 		applyDecay ();
 

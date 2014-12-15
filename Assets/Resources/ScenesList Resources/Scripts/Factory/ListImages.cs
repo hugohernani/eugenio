@@ -55,7 +55,7 @@ public class ListImages : ListAbstract {
 				newItem.GetComponentInChildren<Button>().onClick.AddListener(clickAction);
 			}
 			
-			newItem.parent = container.transform;
+			newItem.SetParent(container.transform);
 			
 			newItem.offsetMax = Vector2.zero;
 			newItem.offsetMin = Vector2.zero;
@@ -80,6 +80,8 @@ public class ListImages : ListAbstract {
 		GameObject persistenceTask = Resources.Load<GameObject> ("All_Task/prefab/TASK_RUNNING");
 
 		Instantiate (persistenceTask);
+
+		DBTimeControlTask.allowedToSave = false;
 
 		Destroy(GameObject.FindGameObjectWithTag("MAIN_SCENE_OBJECT"));
 	}

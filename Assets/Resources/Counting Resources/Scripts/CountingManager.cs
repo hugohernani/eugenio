@@ -82,7 +82,7 @@ public class CountingManager : MonoBehaviour {
 			GameObject item = Instantiate(prefab, boxItemsGO.transform.position, Quaternion.identity) as GameObject;
 			item.GetComponent<Image>().sprite = image;
 
-			item.transform.parent = boxItemsGO.transform;
+			item.transform.SetParent(boxItemsGO.transform);
 
 			items.Add(item);
 		}

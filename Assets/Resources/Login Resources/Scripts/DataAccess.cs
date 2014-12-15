@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic; 
 using System.IO;
@@ -9,13 +10,14 @@ public class DataAccess: MonoBehaviour{
 	
 	readonly string NAME_FIELD = "nome";
 	readonly string PASSWORD_FIELD = "senha";
-	
-	readonly string serverUriPath = "http://localhost:8000/";
-	readonly string userAccessUriPath = "User/";
-	readonly string foodAccessUriPath = "Food/";
-	readonly string TaskManagerAccessUriPath = "TaskManager/";
-	readonly string GameAccessUriPath = "Game/";
-	readonly string PetAccessUriPath = "VirtualPet/";
+
+//	readonly string serverUriPath = "http://localhost:8000/";
+	readonly string serverUriPath = "http://hhernanni.webfactional.com/";
+	readonly string userAccessUriPath = "user/";
+	readonly string foodAccessUriPath = "food/";
+	readonly string TaskManagerAccessUriPath = "taskmanager/";
+	readonly string GameAccessUriPath = "game/";
+	readonly string PetAccessUriPath = "virtualpet/";
 	
 	User user;
 	WWW wwwResquest;
@@ -120,24 +122,24 @@ public class DataAccess: MonoBehaviour{
 			user.Teacher = textsplited [9];
 			user.Updated = DateTime.ParseExact(textsplited[10], "yyyy-MM-dd HH:mm:ss", null);
 			info("Usuario Encontrado. \n Level: " + user.Level_pet.ToString());
-//			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(1f);
 			setPetStatus ();
 			info("Pet carregado.");
-//			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(1f);
 			getAvailableFoods ();
 			info("Comidas disponiveis carregadas.");
-//			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(1f);
 			getAvailableGames ();
 			info("Jogos disponiveis carregados.");
-//			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(1f);
 			retrieveCategories ();
 			info("Categorias de tarefas carregadas.");
-//			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(1f);
 			info("Tarefas carregadas.");
 
-//			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(1f);
 			info("Informacoes adquiridas");
-//			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(1f);
 			info("finished");
 
 			yield break;
@@ -338,25 +340,27 @@ public class DataAccess: MonoBehaviour{
 		string response = wwwResquest.text;
 		
 		List<Category> categories = new List<Category> ();
-		
-		string[] categoryObjects = response.Split (';');
-		foreach(string sCategory in categoryObjects){
-			string[] values = sCategory.Split('.');
-			MainCategory category = new MainCategory();
-			category.Id = int.Parse(values[0]);
-			category.Name = values[1];
-			category.Stage = int.Parse(values[2]);
-			category.InitialValue = int.Parse(values[3]);
-			category.FinalValue = int.Parse(values[4]);
-			category.Level = int.Parse(values[5]);
-			category.Available = bool.Parse(values[6]);
 
-			nextTaskAvailable = true;
-			category.SubCategories = retrieveSubCategories(category, category.Stage);
-
-			categories.Add(category);
+		if(response != ""){
+			string[] categoryObjects = response.Split (';');
+			foreach(string sCategory in categoryObjects){
+				string[] values = sCategory.Split('.');
+				MainCategory category = new MainCategory();
+				category.Id = int.Parse(values[0]);
+				category.Name = values[1];
+				category.Stage = int.Parse(values[2]);
+				category.InitialValue = int.Parse(values[3]);
+				category.FinalValue = int.Parse(values[4]);
+				category.Level = int.Parse(values[5]);
+				category.Available = bool.Parse(values[6]);
+				
+				nextTaskAvailable = true;
+				category.SubCategories = retrieveSubCategories(category, category.Stage);
+				
+				categories.Add(category);
+			}
 		}
-		
+
 		user.Categories = categories;
 	}
 	
@@ -372,6 +376,7 @@ public class DataAccess: MonoBehaviour{
 			retrieveTasksAndUserDoes(category, null);
 			return null; // There is not subcategory
 		}else{
+			Debug.Log("category: " + ((MainCategory) category).ToString());
 			List<Category> subCategories = new List<Category>();
 			
 			string[] subCategoryObjects = response.Split (';');
@@ -407,48 +412,50 @@ public class DataAccess: MonoBehaviour{
 		if (subCategory != null){
 			targetUri += (subCategory.Id + "/");
 		}
-		
+
 		GET (targetUri);
 		string response = wwwResquest.text;
-		
-		string[] taskObjects = response.Split (';');
-		foreach(string taskObject in taskObjects){
-			string[] values = taskObject.Split('*');
-			Task task = new Task();
-			task.Id = int.Parse(values[0]);
-			task.Name = values[1];
-			task.CategoryId = int.Parse(values[3]);
-			if (values[4] != "0")
-				task.SubCategoryId = int.Parse(values[4]);
-			else
-				task.SubCategoryId = 0;
 
-			if(values[5] != "0"){
-				task.Available = true;
-
-				string[] udValues = values[5].Split('|');
-				User.UserDoes ud = new User.UserDoes();
-				ud.Id = int.Parse(udValues[0]);
-				ud.UserId = int.Parse(udValues[1]);
-				ud.TaskId = task.Id;
-				ud.Hits = int.Parse(udValues[3]);
-				ud.Stars = int.Parse(udValues[4]);
-				ud.Duration = float.Parse(udValues[5]);
-				ud.Date_user_did = DateTime.ParseExact(udValues[6], "yyyy-MM-dd HH:mm:ss", null);
-				ud.Tentativa = int.Parse(udValues[7]);
-
-				if(ud.Stars < 10){
+		if(response != ""){
+			string[] taskObjects = response.Split (';');
+			foreach(string taskObject in taskObjects){
+				string[] values = taskObject.Split('*');
+				Task task = new Task();
+				task.Id = int.Parse(values[0]);
+				task.Name = values[1];
+				task.CategoryId = int.Parse(values[3]);
+				if (values[4] != "0")
+					task.SubCategoryId = int.Parse(values[4]);
+				else
+					task.SubCategoryId = 0;
+				
+				if(values[5] != "0"){
+					task.Available = true;
+					
+					string[] udValues = values[5].Split('|');
+					User.UserDoes ud = new User.UserDoes();
+					ud.Id = int.Parse(udValues[0]);
+					ud.UserId = int.Parse(udValues[1]);
+					ud.TaskId = task.Id;
+					ud.Hits = int.Parse(udValues[3]);
+					ud.Duration = float.Parse(udValues[4]);
+					ud.Date_user_did = DateTime.ParseExact(udValues[5], "yyyy-MM-dd HH:mm:ss", null);
+					
+					if(ud.Hits < 10){
+						nextTaskAvailable = false;
+					}else{
+						nextTaskAvailable = true;
+					}
+					
+					user.AddUserDoesByVerification(ud);
+				}else{
+					task.Available = nextTaskAvailable;
 					nextTaskAvailable = false;
 				}
-
-				user.AddUserDoesByVerification(ud);
-			}else{
-				task.Available = nextTaskAvailable;
-				nextTaskAvailable = false;
+				
+				user.AddTaskByVerification(task);
+				
 			}
-
-			user.AddTaskByVerification(task);
-			
 		}
 
 	}
@@ -468,9 +475,8 @@ public class DataAccess: MonoBehaviour{
 		postDict.Add("task_id", task_id.ToString());
 		
 		POST (targetUri, postDict);
-		
-		List<User.UserDoes> tempListUserDoes = new List<User.UserDoes> ();
-		
+		Queue<User.UserDoes> tempQueueUserDoes = new Queue<User.UserDoes> ();
+
 		string response = wwwResquest.text;
 		
 		if (response == "")
@@ -485,17 +491,16 @@ public class DataAccess: MonoBehaviour{
 			ud.Hits = int.Parse(values[1]);
 			ud.Duration = float.Parse(values[2]);
 			ud.Date_user_did = DateTime.ParseExact(values[3], "yyyy-MM-dd HH:mm:ss", null);
-			ud.Tentativa = int.Parse(values[4]);
 			ud.TaskId = int.Parse(values[5]);
 			ud.UserId = int.Parse(values[6]);
-			
-			tempListUserDoes.Add(ud);
-			
+
+			tempQueueUserDoes.Enqueue(ud);
+
 			Debug.Log("Added a relational userTask");
 		}
 		
-		user.UserDoesList = tempListUserDoes;
-		user.CachedUserDoesList = tempListUserDoes;
+		user.UserDoesList = tempQueueUserDoes.ToList();
+//		user.CachedUserDoesQueue = tempQueueUserDoes;
 		
 	}
 
@@ -539,11 +544,12 @@ public class DataAccess: MonoBehaviour{
 		string targetUri = serverUriPath + userAccessUriPath;
 		targetUri += ("saveScores/");
 
-		List<User.UserPlays> itemsToRemoveFromList = new List<User.UserPlays> ();
-
 		int qntSavedInDB = 0;
 		bool success = false;
-		foreach (User.UserPlays up in user.CachedUserPlaysList) {
+		Queue<User.UserPlays> qTempUserPlays = user.CachedUserPlaysQueue;
+		int qntQueued = qTempUserPlays.Count;
+		while(qTempUserPlays.Count > 0){
+			User.UserPlays up = qTempUserPlays.Dequeue();
 			Dictionary<string, string> userPlaysDict = new Dictionary<string, string> ();
 			
 			userPlaysDict.Add("user", up.UserId.ToString());
@@ -559,21 +565,17 @@ public class DataAccess: MonoBehaviour{
 				saveLoad.AddUserPlays(up);
 				Debug.Log("UserPlays saved in file");
 			}
-			itemsToRemoveFromList.Add(up);
 		}
 		
-		if(qntSavedInDB != 0 && qntSavedInDB == user.CachedUserPlaysList.Count){
+		if(qntSavedInDB != 0 && qntSavedInDB == qntQueued){
 			success = true;
 		}
 		
 		if(saveLoad != null){
 			saveLoad.SaveUserPlays ();
 		}
-		
-		foreach (User.UserPlays up in itemsToRemoveFromList) {
-			user.RemoveUserPlayFromCachedList(up);
-		}
-		
+
+		user.CachedUserPlaysQueue = qTempUserPlays;
 		return success;
 	}
 
@@ -590,7 +592,6 @@ public class DataAccess: MonoBehaviour{
 			userDoesDict.Add("user", userDoes.UserId.ToString());
 			userDoesDict.Add("task", userDoes.TaskId.ToString());
 			userDoesDict.Add("hits", userDoes.Hits.ToString());
-			userDoesDict.Add("stars", userDoes.Stars.ToString());
 			userDoesDict.Add("duration",userDoes.Duration.ToString());
 			userDoesDict.Add("date_user_did", userDoes.Date_user_did.ToString("yyyy-MM-dd HH:mm:ss"));
 			
@@ -620,17 +621,17 @@ public class DataAccess: MonoBehaviour{
 		string targetUri = serverUriPath + userAccessUriPath;
 		targetUri += ("createUpdateUserDoes/");
 		
-		List<User.UserDoes> itemsToRemoveFromList = new List<User.UserDoes> ();
-
 		int qntSavedInDB = 0;
 		bool success = false;
-		foreach (User.UserDoes userDoes in user.CachedUserDoesList) {
+		Queue<User.UserDoes> qTempUserDoes = user.CachedUserDoesQueue;
+		int qntQueued = qTempUserDoes.Count;
+		while(qTempUserDoes.Count > 0){
+			User.UserDoes userDoes = qTempUserDoes.Dequeue();
 			Dictionary<string, string> userDoesDict = new Dictionary<string, string> ();
 			
 			userDoesDict.Add("user", userDoes.UserId.ToString());
 			userDoesDict.Add("task", userDoes.TaskId.ToString());
 			userDoesDict.Add("hits", userDoes.Hits.ToString());
-			userDoesDict.Add("stars", userDoes.Stars.ToString());
 			userDoesDict.Add("duration",userDoes.Duration.ToString());
 			userDoesDict.Add("date_user_did", userDoes.Date_user_did.ToString("yyyy-MM-dd HH:mm:ss"));
 			
@@ -638,26 +639,19 @@ public class DataAccess: MonoBehaviour{
 			
 			if(result){
 				qntSavedInDB++;
-				Debug.Log("UserTask tuple created/updated in database");
+				Debug.Log("UserTask tuple created/updated in database. " + userDoes.ToString());
 			} else {
 				saveLoad.AddUserDoes(userDoes);
 				Debug.Log("UserTask saved in file");
 			}
-			itemsToRemoveFromList.Add(userDoes);
+
 		}
 
-		if(qntSavedInDB != 0 && qntSavedInDB == user.CachedUserDoesList.Count){
+		if(qntSavedInDB != 0 && qntSavedInDB == qntQueued){
 			success = true;
 		}
 
-		if(saveLoad != null){
-			saveLoad.SaveUserDoes ();
-		}
-
-		foreach (User.UserDoes ud in itemsToRemoveFromList) {
-			user.RemoveUserTaskFromCachedList(ud);
-		}
-
+		user.CachedUserDoesQueue = qTempUserDoes;
 		return success;
 		
 	}
@@ -711,9 +705,11 @@ public class DataAccess: MonoBehaviour{
 		if(saveLoadInstance != null){
 			updateUserFromFile (saveLoadInstance);
 			updateUserDoesFromFile (saveLoadInstance);
+			updateUserPlaysFromFile(saveLoadInstance);
 		}else{
 			updateUserFromFile (saveLoad);
 			updateUserDoesFromFile (saveLoad);
+			updateUserPlaysFromFile(saveLoad);
 			saveLoad.destroyUserFolder ();
 		}
 		// reconstruct saveLoad object?
@@ -779,7 +775,6 @@ public class DataAccess: MonoBehaviour{
 	void WaitForRequest(WWW www) {
 		
 		while(!www.isDone){
-			CheckDatabase.UriReach = www.url;
 		}
 		
 		wwwResquest = www;

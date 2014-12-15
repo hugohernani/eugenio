@@ -53,9 +53,7 @@ public class ListGames : ListAbstract {
 				newItem.GetComponentInChildren<Button>().onClick.AddListener(clickAction);
 			}
 
-			
-
-			newItem.parent = container.transform;
+			newItem.SetParent(container.transform);
 			
 			newItem.offsetMax = Vector2.zero;
 			newItem.offsetMin = Vector2.zero;
@@ -69,16 +67,12 @@ public class ListGames : ListAbstract {
 	}
 	
 	void callScene(GameItem item){
-
 		user.CurrentGame = user.getGame (item.Name);
-
 		user.startSavingGame ();
 
 		Debug.Log (user.CurrentGame.ToString ());
 		
 		Application.LoadLevel(user.CurrentGame.Name);
-		
 	}
-
 
 }

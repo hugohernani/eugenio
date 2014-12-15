@@ -55,7 +55,6 @@ public class UserInteraction : MonoBehaviour {
 			eugenioInteraction.EugenioYesAnimation();
 		}
 		currentUser.TaskPoints = hitQty;
-		currentUser.SaveTaskHits();
 		return hitQty;
 	}
 

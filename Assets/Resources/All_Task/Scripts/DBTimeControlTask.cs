@@ -20,13 +20,11 @@ public class DBTimeControlTask : MonoBehaviour {
 
 	void OnDestroy(){
 		if(DBTimeControlTask.allowedToSave){
-				Debug.Log ("Destroying TASK_RUNNING.");
-				
-				User user = User.getInstance;
-				
-				user.SaveTaskHits ();
-				
-				user.SaveTaskDateAdnDuration(TIMESCENE);
+			Debug.Log ("Destroying TASK_RUNNING.");
+			
+			User user = User.getInstance;
+			
+			user.SaveTaskDateAndDuration(TIMESCENE);
 		}
 		allowedToSave = !allowedToSave;
 	}
