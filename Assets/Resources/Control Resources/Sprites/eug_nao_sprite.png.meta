@@ -1,0 +1,329 @@
+fileFormatVersion: 2
+guid: bb0186e4245c6d342bc1cd73cccf0d8e
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: eug_todos_estados_0
+    21300002: eug_todos_estados_1
+    21300004: eug_todos_estados_9
+    21300006: eug_todos_estados_10
+    21300008: eug_todos_estados_11
+    21300010: eug_todos_estados_12
+    21300012: eug_todos_estados_13
+    21300014: eug_todos_estados_14
+    21300016: eug_todos_estados_15
+    21300018: eug_todos_estados_16
+    21300020: eug_todos_estados_17
+    21300022: eug_todos_estados_18
+    21300024: eug_todos_estados_19
+    21300026: eug_todos_estados_20
+    21300028: eug_todos_estados_21
+    21300030: eug_todos_estados_22
+    21300032: eug_todos_estados_27
+    21300034: eug_todos_estados_28
+    21300036: eug_todos_estados_29
+    21300038: eug_todos_estados_30
+    21300040: eug_todos_estados_31
+    21300042: eug_todos_estados_32
+    21300044: eug_todos_estados_33
+    21300046: eug_todos_estados_34
+    21300048: eug_todos_estados_35
+    21300050: eug_todos_estados_36
+    21300052: eug_todos_estados_37
+    21300054: eug_todos_estados_38
+    21300056: eug_todos_estados_39
+    21300058: eug_todos_estados_40
+    21300060: eug_todos_estados_41
+    21300062: eug_todos_estados_42
+    21300064: eug_todos_estados_43
+    21300066: eug_todos_estados_44
+    21300068: eug_todos_estados_45
+    21300070: eug_todos_estados_54
+    21300072: eug_todos_estados_55
+    21300074: eug_todos_estados_56
+    21300076: eug_todos_estados_57
+    21300078: eug_todos_estados_58
+    21300080: eug_todos_estados_59
+    21300082: eug_todos_estados_60
+    21300084: eug_todos_estados_61
+    21300086: eug_todos_estados_62
+    21300088: eug_todos_estados_63
+    21300090: eug_todos_estados_64
+    21300092: eug_todos_estados_65
+    21300094: eug_todos_estados_66
+    21300096: eug_todos_estados_67
+    21300098: eug_todos_estados_68
+    21300100: eug_todos_estados_69
+    21300102: eug_todos_estados_70
+    21300104: eug_todos_estados_71
+    21300106: eug_todos_estados_72
+    21300108: eug_todos_estados_73
+    21300110: eug_todos_estados_74
+    21300112: eug_todos_estados_75
+    21300114: eug_sim_0
+    21300116: eug_sim_1
+    21300118: eug_sim_2
+    21300120: eug_sim_3
+    21300122: eug_sim_4
+    21300124: eug_sim_5
+    21300126: eug_sim_6
+    21300128: eug_sim_7
+    21300130: eug_todos_estados_84
+    21300132: eug_todos_estados_85
+    21300134: eug_todos_estados_86
+    21300136: eug_todos_estados_87
+    21300138: eug_todos_estados_88
+    21300140: eug_todos_estados_89
+    21300142: eug_todos_estados_90
+    21300144: eug_todos_estados_91
+    21300146: eug_todos_estados_92
+    21300148: eug_todos_estados_93
+    21300150: eug_todos_estados_94
+    21300152: eug_todos_estados_95
+    21300154: eug_todos_estados_96
+    21300156: eug_todos_estados_97
+    21300158: eug_todos_estados_98
+    21300160: eug_todos_estados_99
+    21300162: eug_todos_estados_100
+    21300164: eug_todos_estados_101
+    21300166: eug_todos_estados_102
+    21300168: eug_todos_estados_103
+    21300170: eug_todos_estados_104
+    21300172: eug_todos_estados_105
+    21300174: eug_todos_estados_106
+    21300176: eug_todos_estados_107
+    21300178: eug_todos_estados_108
+    21300180: eug_todos_estados_109
+    21300182: eug_todos_estados_110
+    21300184: eug_todos_estados_111
+    21300186: eug_todos_estados_112
+    21300188: eug_todos_estados_113
+    21300190: eug_nao_sprite_9
+    21300192: eug_nao_sprite_29
+    21300194: eug_nao_sprite_34
+    21300196: eug_nao_sprite_38
+    21300198: eug_nao_sprite_39
+    21300200: eug_nao_sprite_40
+    21300202: eug_nao_sprite_46
+    21300204: eug_nao_sprite_47
+    21300206: eug_nao_sprite_48
+    21300208: eug_nao_sprite_49
+    21300210: eug_nao_sprite_50
+    21300212: eug_nao_sprite_51
+    21300214: eug_nao_sprite_52
+    21300216: eug_nao_sprite_53
+    21300218: eug_nao_sprite_88
+    21300220: eug_nao_sprite_101
+    21300222: eug_nao_sprite_108
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 1024
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 560, y: 250, z: 190, w: 1833}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: eug_nao_sprite_9
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 1909
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_29
+      rect:
+        serializedVersion: 2
+        x: 845
+        y: 1329
+        width: 34
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_34
+      rect:
+        serializedVersion: 2
+        x: 1738
+        y: 1329
+        width: 9
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_38
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 1316
+        width: 34
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_39
+      rect:
+        serializedVersion: 2
+        x: 1665
+        y: 1316
+        width: 35
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_40
+      rect:
+        serializedVersion: 2
+        x: 2117
+        y: 1316
+        width: 34
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_46
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 844
+        width: 374
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_47
+      rect:
+        serializedVersion: 2
+        x: 1038
+        y: 844
+        width: 370
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_48
+      rect:
+        serializedVersion: 2
+        x: 1498
+        y: 844
+        width: 374
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_49
+      rect:
+        serializedVersion: 2
+        x: 1962
+        y: 844
+        width: 374
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_50
+      rect:
+        serializedVersion: 2
+        x: 2422
+        y: 844
+        width: 374
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_51
+      rect:
+        serializedVersion: 2
+        x: 2886
+        y: 844
+        width: 374
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_52
+      rect:
+        serializedVersion: 2
+        x: 3350
+        y: 844
+        width: 370
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_53
+      rect:
+        serializedVersion: 2
+        x: 3810
+        y: 844
+        width: 374
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_88
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 410
+        width: 12
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_101
+      rect:
+        serializedVersion: 2
+        x: 2083
+        y: 165
+        width: 12
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eug_nao_sprite_108
+      rect:
+        serializedVersion: 2
+        x: 3011
+        y: 165
+        width: 8
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
